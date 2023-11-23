@@ -13,7 +13,7 @@ const { Client, LocalAuth } = require('whatsapp-web.js');
 const process = require('node:process');
 
 // Setup ENV variables so it can run on docker and also as standalone
-// apiHost is the address of the api (The code to this api can be fount in api/api.py)
+// apiHost is the address of the api (The code to this api can be found in api/api.py)
 // dataPath is the path where the google chrome session will be stored
 if (process.env.API_ADDRESS && process.env.CHROME_DATA_PATH) {
 	apiHost = process.env.API_ADDRESS;
