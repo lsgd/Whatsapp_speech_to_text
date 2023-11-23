@@ -25,8 +25,10 @@ if (process.env.API_ADDRESS && process.env.CHROME_DATA_PATH) {
 }
 
 // Setup ENV variable to always transcribe voice messages.
-if(process.env.ALWAYS_TRANSCRIBE) {
-	console.log('ALWAYS_TRANSCRIBE type = ' + typeof(process.env.ALWAYS_TRANSCRIBE));
+automaticTranscription = false;
+if(process.env.AUTOMATIC_TRANSCRIPTION) {
+	console.log('AUTOMATIC_TRANSCRIPTION type = ' + typeof(process.env.AUTOMATIC_TRANSCRIPTION));
+	automaticTranscription = true;
 }
 
 // Setup options for the client and data path for the google chrome session
@@ -39,7 +41,7 @@ const client = new Client({
 });
 
 // Header that the reply message will have, following by the transcription
-const responseMsgHeader = "This is an automatic transcription of the voice message:"
+const responseMsgHeader = "*Transkript:*\n";
 const responseMsgHeaderError = "An error ocurred with the automatic transcription of the voice message."
 
 // Initialize client
@@ -131,46 +133,69 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 	return attachmentData;
  }
 
+ async function getMessageToTranscribe(message) {
+	if(!message) {
+		return null;
+	}
+
+	// Only return a WhatsApp message if media was found.
+	if (automaticTranscription && message.hasMedia) {
+		return message;
+	}
+
+	if(message.body == '!tran' && message.hasQuotedMsg) {
+		const quotedMsg = await message.getQuotedMessage();
+		if (quotedMsg.hasMedia) {
+			return quotedMsg;
+		}
+	}
+
+	return null;
+ }
+
 
 // TODO: when replied with !tran, the worker will transcribe only the audio quoted
 async function AutomatedMessages(message) {
-	const chat = await message.getChat();
+	const voiceMessage = await getMessageToTranscribe(message);
 
-	if(message.body == '!tran' && message.hasQuotedMsg){
-		const quotedMsg = await message.getQuotedMessage();
-
-		const messageId = quotedMsg.id._serialized	
-	
-		// Here we check if the message has media
-		if (quotedMsg.hasMedia) {
-			// If is a voice message, we download it and send it to the api
-			if (quotedMsg.type.includes("ptt") || quotedMsg.type.includes("audio")) {
-				const attachmentData = await downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries=1000);
-				if (attachmentData) {
-					SpeechToTextTranscript(attachmentData.data, message)
-					.then((body) => {
-						console.log(body); // Handle the returned data here
-						const data = JSON.parse(body);
-						for (const result of data.results) {
-							const transcript = result.transcript;
-							
-							chat.sendMessage(responseMsgHeader + "\n\n" + transcript, {
-								quotedMessageId: messageId
-							});
-						}
-					})
-					.catch((err) => {
-						console.error(err); // Handle the error here
-						chat.sendMessage(responseMsgHeaderError, {
-							quotedMessageId: messageId
-						});
-					});
-				} else {
-					message.reply("The file couldn't be fetched");
-				}
-			}
-		}
+	// The provided message and a possible quoted message weren't of type voice message.
+	if (!voiceMessage) {
+		return;
 	}
+
+	// Bail out early if the message does not contain audio.
+	if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
+		return;
+	}
+
+	const chat = await message.getChat();
+	const messageId = voiceMessage.id._serialized;
+
+	// If it is a voice message, we download it and send it to the api
+	const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
+	if (!attachmentData) {
+		message.reply("Die Sprachnachricht konnte nicht geladen werden");
+		return;
+	}
+
+	SpeechToTextTranscript(attachmentData.data, message)
+		.then((body) => {
+			console.log(body); // Handle the returned data here
+			const data = JSON.parse(body);
+			for (const result of data.results) {
+				const transcript = result.transcript;
+
+				chat.sendMessage(responseMsgHeader + transcript, {
+					quotedMessageId: messageId
+				});
+			}
+		})
+		.catch((err) => {
+			console.error(err); // Handle the error here
+			chat.sendMessage(responseMsgHeaderError, {
+				quotedMessageId: messageId
+			});
+		});
 }
 
 // Text to speech function
