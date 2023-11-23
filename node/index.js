@@ -24,6 +24,11 @@ if (process.env.API_ADDRESS && process.env.CHROME_DATA_PATH) {
 	dataPath = "./"
 }
 
+// Setup ENV variable to always transcribe voice messages.
+if(process.env.ALWAYS_TRANSCRIBE) {
+	console.log('ALWAYS_TRANSCRIBE type = ' + typeof(process.env.ALWAYS_TRANSCRIBE));
+}
+
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
 	authStrategy: new LocalAuth({ dataPath: dataPath }),
