@@ -25,10 +25,13 @@ if (process.env.API_ADDRESS && process.env.CHROME_DATA_PATH) {
 }
 
 // Setup ENV variable to always transcribe voice messages.
-automaticTranscription = false;
-if(process.env.AUTOMATIC_TRANSCRIPTION) {
-	console.log('AUTOMATIC_TRANSCRIPTION type = ' + typeof(process.env.AUTOMATIC_TRANSCRIPTION));
+if(process.env.AUTOMATIC_TRANSCRIPTION && process.env.AUTOMATIC_TRANSCRIPTION.toString().toLowerCase() == 'true') {
+	console.log('Automatic transcription for incoming voice messages is enabled.');
 	automaticTranscription = true;
+}
+else {
+	console.log('Automatic transcription for incoming voice messages is not enabled.');
+	automaticTranscription = false;
 }
 
 // Setup options for the client and data path for the google chrome session
