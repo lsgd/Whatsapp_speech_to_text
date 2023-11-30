@@ -16,7 +16,9 @@ If you do not want to host the model directly on your computer, you can use the 
 If you want to contribute, just send a pull request.
    
 ### Usage
-Just reply to the voice message you want to transcribe with **!tran**
+Just reply to the voice message you want to transcribe with **!tran**.
+
+There is also an automatic mode where every voice message will be automatically transcribed.
 
 ### Running the server
 - To build the images run ```docker-compose build```
@@ -24,6 +26,8 @@ Just reply to the voice message you want to transcribe with **!tran**
 
 ### Configuration
 - To chose the model you want to use edit the variable called **MODEL_VERSION** under **x-shared-variables** inside the file docker-compose.yml. Default model: **tiny**
+  - Possible model values: `tiny`, `base`, `small`, `medium`, `large`. Check https://github.com/openai/whisper for the latest list. 
+- In order to use the automatic transcription mode, you need to pass the environment variable `AUTOMATIC_TRANSCRIPTION` with value `true` to your docker container.
 - To configure the path and the api address edit the environment variables inside the ```docker-compose.yml``` file. The default values are: 
   - HOST_ADDRESS=whisper_api
   - CHROME_DATA_PATH="/app/data/"
