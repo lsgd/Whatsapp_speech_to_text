@@ -4,7 +4,10 @@ services:
   speech_to_text_whisper_api:
     build:
       context: ./api
-
+      args:
+        MODEL_SIZE: tiny
+    environment:
+      MODEL_SIZE: small
   speech_to_text_node:
     build: ./node
 

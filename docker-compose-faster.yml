@@ -1,0 +1,39 @@
+version: '3.5'
+
+services:
+  speech_to_text_whisper_api:
+    build:
+      context: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:api
+      args:
+        MODEL_SIZE: 'small'
+        DEBUG: 1
+    container_name: 'speech_to_text_whisper_api'
+    environment:
+      MODEL_SIZE: 'small'
+      DEBUG: 1
+    networks:
+      whatsapp_network:
+        ipv4_address: ${IPV4_NETWORK:-172.68}.2.1
+
+  speech_to_text_node:
+    build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
+    container_name: 'speech_to_text_node'
+    volumes:
+       - ./node/data:/app/data/
+    depends_on:
+      - speech_to_text_whisper_api
+    environment:
+      API_ADDRESS: speech_to_text_whisper_api
+      CHROME_DATA_PATH: '/app/data/'
+      AUTOMATIC_TRANSCRIPTION: true
+    networks:
+      whatsapp_network:
+        ipv4_address: ${IPV4_NETWORK:-172.68}.2.2
+
+networks:
+  whatsapp_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.68.0.0/16
