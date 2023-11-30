@@ -44,7 +44,7 @@ const client = new Client({
 });
 
 // Header that the reply message will have, following by the transcription
-const responseMsgHeader = "*Transkript:*\n";
+const responseMsgHeader = "*Transcript:*\n";
 const responseMsgHeaderError = "An error ocurred with the automatic transcription of the voice message."
 
 // Initialize client
@@ -159,15 +159,18 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 
 // TODO: when replied with !tran, the worker will transcribe only the audio quoted
 async function AutomatedMessages(message) {
+    console.log("Processing message %s", message);
 	const voiceMessage = await getMessageToTranscribe(message);
 
 	// The provided message and a possible quoted message weren't of type voice message.
 	if (!voiceMessage) {
+	    console.log("VoiceMessage is null");
 		return;
 	}
 
 	// Bail out early if the message does not contain audio.
 	if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
+	    console.log("Wrong message type: %s", voiceMessage.type);
 		return;
 	}
 
@@ -177,7 +180,7 @@ async function AutomatedMessages(message) {
 	// If it is a voice message, we download it and send it to the api
 	const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
 	if (!attachmentData) {
-		message.reply("Die Sprachnachricht konnte nicht geladen werden");
+		message.reply("Message download failed!");
 		return;
 	}
 
