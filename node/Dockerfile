@@ -1,4 +1,4 @@
-FROM node
+FROM node as base
 
 # Install Chromium.
 RUN \
@@ -10,6 +10,8 @@ RUN \
 
 
 RUN mkdir /app
+
+FROM base as runner
 
 COPY index.js /app/index.js
 COPY package.json /app/package.json
