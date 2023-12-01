@@ -1,0 +1,13 @@
+version: '3.5'
+
+services:
+  speech_to_text_whisper_api:
+    build:
+      context: ./faster_whisper
+      args:
+        MODEL_SIZE: small
+    environment:
+      MODEL_SIZE: small
+  speech_to_text_node:
+    build: ./node
+

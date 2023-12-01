@@ -3,7 +3,7 @@ version: '3.5'
 services:
   speech_to_text_whisper_api:
     build:
-      context: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:api
+      context: https://github.com/emdioh/Whatsapp_speech_to_text.git#faster_whisper:faster_whisper
       args:
         MODEL_SIZE: 'small'
         DEBUG: 1
