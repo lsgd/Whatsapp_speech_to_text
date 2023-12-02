@@ -10,6 +10,7 @@ const request = require('request');
 const { Client, LocalAuth } = require('whatsapp-web.js');
 
 const env = require('./environment.js');
+const speechWhisper = require('./speech_whisper.js');
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
@@ -134,7 +135,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 
 	return null;
  }
- 
+
 async function ProcessMessage(message) {
 	const voiceMessage = await getMessageToTranscribe(message);
 
@@ -158,53 +159,22 @@ async function ProcessMessage(message) {
 		return;
 	}
 
-	SpeechToTextTranscript(attachmentData.data, message)
+	speechWhisper.transcribe(attachmentData.data, message)
 		.then((body) => {
-			console.log(body); // Handle the returned data here
 			const data = JSON.parse(body);
 			for (const result of data.results) {
 				const transcript = result.transcript;
-
 				chat.sendMessage(responseMsgHeader + transcript, {
 					quotedMessageId: messageId
 				});
 			}
 		})
 		.catch((err) => {
-			console.error(err); // Handle the error here
+			console.error(err);
 			chat.sendMessage(responseMsgHeaderError, {
 				quotedMessageId: messageId
 			});
 		});
-}
-
-// Text to speech function
-async function SpeechToTextTranscript(base64data, message) {
-	// Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
-	const decodedBuffer = Buffer.from(base64data, 'base64');
-
-	// Send the decoded binary buffer to the Flask API
-	return new Promise((resolve, reject) => {
-		request.post({
-			// This url is the url of the Flask API that handles the transcription using Whisper
-			url: env.whisperAPIAddress,
-			formData: {
-			file: {
-			  value: decodedBuffer,
-			  options: {
-				filename: message.from + message.timestamp
-			  }
-			}
-		  }
-		}, function(err, httpResponse, body) {
-			if (err) {
-				console.error(err);
-			} else {
-				console.log('Upload successful! Server responded with:', body);
-			}
-			resolve(body);
-		});
-	});
 }
 
 // Start the script.
