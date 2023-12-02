@@ -72,15 +72,16 @@ async function ContactsWhiteList(Contact) {
 // Date and hour based on the timestamp of the mesage (unix time)
 function GetDate(timestamp) {
 		const date = new Date(timestamp * 1000);
+
 		const year = date.getFullYear();
-		const month = date.getMonth();
-		const day = date.getDate();
-		const hours = date.getHours();
-		const minutes = '0' + date.getMinutes();
-		const seconds = '0' + date.getSeconds();
+		const month = (date.getMonth() + 1).toString().padStart(2, '0');
+		const day = date.getDate().toString().padStart(2, '0');
+		const hours = date.getHours().toString().padStart(2, '0');
+		const minutes = date.getMinutes().toString().padStart(2, '0');
+		const seconds = date.getSeconds().toString().padStart(2, '0');
 
 		const formattedDate = `${year}-${month}-${day}`;
-		const formattedTime = hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
+		const formattedTime = `${hours}:${minutes}:${seconds}`;
 
 		return [formattedTime, formattedDate];
 }
