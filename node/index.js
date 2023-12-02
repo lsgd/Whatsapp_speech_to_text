@@ -134,9 +134,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 
 	return null;
  }
-
-
-// TODO: when replied with !tran, the worker will transcribe only the audio quoted
+ 
 async function ProcessMessage(message) {
 	const voiceMessage = await getMessageToTranscribe(message);
 
