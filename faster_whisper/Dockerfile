@@ -22,6 +22,7 @@ RUN set -eux; \
         rm -rf /var/lib/apt/lists/*
 COPY --from=pybuilder /root/.local /usr/local
 COPY *.py /app/
+COPY start.sh /app/
 
 WORKDIR /app
 
@@ -36,5 +37,5 @@ FROM runner
 WORKDIR /app
 
 EXPOSE 5000
-CMD [ "gunicorn", "api:app", "-w", "2", "--threads", "2", "-b", "0.0.0.0:5000", "--timeout", "900" ]
+CMD [ "sh", "start.sh" ]
 
