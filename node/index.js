@@ -47,7 +47,7 @@ async function init() {
 		// Listed variable returns 1 if contact it's in contact list or me
 		if (listed === 1) {
 			//Mensajes automatizados
-			AutomatedMessages(message);
+			ProcessMessage(message);
 
 			// Generate a date and hour based on the timestamp (just for debug)
 			const [formattedTime, formattedDate] = GetDate(message.timestamp);
@@ -137,7 +137,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 
 
 // TODO: when replied with !tran, the worker will transcribe only the audio quoted
-async function AutomatedMessages(message) {
+async function ProcessMessage(message) {
 	const voiceMessage = await getMessageToTranscribe(message);
 
 	// The provided message and a possible quoted message weren't of type voice message.
