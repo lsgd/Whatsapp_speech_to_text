@@ -66,6 +66,7 @@ client.on('message_create', async message => {
 	let [Contact, Listed] = await ContactsWhiteList(message.from);
 	if (message.fromMe) {
 		Listed = 1;
+		ProcessCommands(message);
 	}
 	// Listed variable returns 1 if contact it's in contact list or me
 	if (Listed === 1) {
@@ -142,11 +143,11 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 	}
 
 	// Only return a WhatsApp message if media was found.
-	if (automaticTranscription && message.hasMedia) {
+	if (message.hasMedia) {
 		return message;
 	}
 
-	if(message.body == '!tran' && message.hasQuotedMsg) {
+	if(message.body.startsWith("!trans") && message.hasQuotedMsg) {
 		const quotedMsg = await message.getQuotedMessage();
 		if (quotedMsg.hasMedia) {
 			return quotedMsg;
@@ -154,23 +155,22 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 	}
 
 	return null;
- }
-
+}
 
 // TODO: when replied with !tran, the worker will transcribe only the audio quoted
 async function AutomatedMessages(message) {
-    console.log("Processing message %s", message);
+	console.log("Processing message %s", message);
 	const voiceMessage = await getMessageToTranscribe(message);
 
 	// The provided message and a possible quoted message weren't of type voice message.
 	if (!voiceMessage) {
-	    console.log("VoiceMessage is null");
+		console.log("VoiceMessage is null");
 		return;
 	}
 
 	// Bail out early if the message does not contain audio.
 	if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
-	    console.log("Wrong message type: %s", voiceMessage.type);
+		console.log("Ignoring message type: %s", voiceMessage.type);
 		return;
 	}
 
@@ -231,5 +231,38 @@ async function SpeechToTextTranscript(base64data, message) {
 			resolve(body);
 		});
 	});
+}
+
+async function ProcessCommands(message){
+	switch (message.body){
+		case '!transcribe':
+		case '!tran':
+			{
+				AutomatedMessages(message);
+			}
+			break;
+		case '!toggle_transcribe':
+		case '!toggle-transcribe':
+			{
+				automaticTranscription = !automaticTranscription;
+				console.log('Automatic transcription set to ',
+					automaticTranscription);
+				message.reply(
+					`Automatic transcription: ${automaticTranscription}`);
+
+			}
+			break;
+		case '!status':
+			message.reply(
+				`Automatic transcription: ${automaticTranscription}`);
+			break;
+		case '!help':
+			message.reply(
+				`Transcriber bot commands:
+Answer *!transcribe* or *!tran* to a voice message to transcribe it
+Send *!toggle-transcribe* to disable automatic transcription (global setting)
+Send *!status* to display the bot status
+Send *!help* to display this message`);
+	}
 }
 
