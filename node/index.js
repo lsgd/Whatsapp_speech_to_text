@@ -122,7 +122,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 	}
 
 	// Only return a WhatsApp message if media was found.
-	if (automaticTranscription && message.hasMedia) {
+	if (env.automaticTranscription && message.hasMedia) {
 		return message;
 	}
 
