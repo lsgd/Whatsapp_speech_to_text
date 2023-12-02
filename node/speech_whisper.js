@@ -3,10 +3,7 @@
 const request = require("request");
 const env = require("./environment");
 
-async function transcribe(base64data, message) {
-    // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
-    const decodedBuffer = Buffer.from(base64data, 'base64');
-
+async function transcribe(decodedVoiceBinaryData, voiceMessageId, message) {
     // Send the decoded binary buffer to the Flask API
     return new Promise((resolve, reject) => {
         request.post(
@@ -15,9 +12,9 @@ async function transcribe(base64data, message) {
                 url: env.whisperAPIAddress,
                 formData: {
                     file: {
-                        value: decodedBuffer,
+                        value: decodedVoiceBinaryData,
                         options: {
-                            filename: message.from + message.timestamp
+                            filename: message.from + message.timestamp + voiceMessageId
                         }
                     }
                 }

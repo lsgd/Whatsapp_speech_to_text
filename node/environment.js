@@ -1,6 +1,7 @@
 // Manages environment variables and falls back to provided default values.
 // Environment variables are mainly used in production, for example with docker.
 
+const fs = require('fs');
 
 function getBooleanEnvVariable(variable) {
     return variable && variable.toString().toLowerCase() == 'true';
@@ -34,6 +35,8 @@ let _sanitizedSpeechRecognitionSystem = '';
 switch (_speechRecognitionSystem) {
     case 'google':
         _sanitizedSpeechRecognitionSystem = _speechRecognitionSystem;
+        const googleServiceAccountCredentialsFile = getStringEnvVariable(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE, null);
+        exports.googleServiceAccountCredentialsFile = googleServiceAccountCredentialsFile;
         const googleCloudStorageBucket = getStringEnvVariable(process.env.GOOGLE_CLOUD_STORAGE_BUCKET, null);
         exports.googleCloudStorageBucket = googleCloudStorageBucket;
         const googleCloudSpeechLanguage = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_LANGUAGE, null);
@@ -43,6 +46,15 @@ switch (_speechRecognitionSystem) {
         const googleCloudSpeechAlternativeLanguages = _alternativeLanguages.map(result => result.trim());
         exports.googleCloudSpeechAlternativeLanguages = googleCloudSpeechAlternativeLanguages;
 
+        if (googleServiceAccountCredentialsFile == null) {
+            throw new Error('Environment variable GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE is required '
+                + 'when using `google` as the speech recognition system.');
+        }
+        if (!fs.existsSync(googleServiceAccountCredentialsFile)) {
+            throw new Error('Environment variable GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE needs to point '
+                + 'to a JSON file containing the service account\'s credentials '
+                + 'when using `google` as the speech recognition system.');
+        }
         if (googleCloudStorageBucket == null) {
             throw new Error('Environment variable GOOGLE_CLOUD_STORAGE_BUCKET is required '
                 + 'when using `google` as the speech recognition system.');
