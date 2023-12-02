@@ -1,42 +1,19 @@
 const fs = require('fs');
 
-// Required for Terminal QRCode
+// Required for terminal QRCode to authorize against WhatsApp.
 const qrcode = require('qrcode-terminal');
 
-// Required for POST request to api
+// Required for POST requests to the whisper API.
 const request = require('request');
 
-// Required for Whatsapp Web connection
+// Required for Whatsapp Web connection.
 const { Client, LocalAuth } = require('whatsapp-web.js');
 
-// Required for ENV Setup
-const process = require('node:process');
-
-// Setup ENV variables so it can run on docker and also as standalone
-// apiHost is the address of the api (The code to this api can be found in api/api.py)
-// dataPath is the path where the google chrome session will be stored
-if (process.env.API_ADDRESS && process.env.CHROME_DATA_PATH) {
-	apiHost = process.env.API_ADDRESS;
-	dataPath = process.env.CHROME_DATA_PATH;
-} else {
-	// If it's not running on docker, it will use the default values
-	apiHost = "127.0.0.1";
-	dataPath = "./"
-}
-
-// Setup ENV variable to always transcribe voice messages.
-if(process.env.AUTOMATIC_TRANSCRIPTION && process.env.AUTOMATIC_TRANSCRIPTION.toString().toLowerCase() == 'true') {
-	console.log('Automatic transcription for incoming voice messages is enabled.');
-	automaticTranscription = true;
-}
-else {
-	console.log('Automatic transcription for incoming voice messages is not enabled.');
-	automaticTranscription = false;
-}
+const env = require('./environment.js');
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
-	authStrategy: new LocalAuth({ dataPath: dataPath }),
+	authStrategy: new LocalAuth({ dataPath: env.chromeDataPath }),
 	puppeteer: {
 		headless: true,
 		args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -47,37 +24,38 @@ const client = new Client({
 const responseMsgHeader = "*Transkript:*\n";
 const responseMsgHeaderError = "An error ocurred with the automatic transcription of the voice message."
 
-// Initialize client
-client.initialize();
+async function init() {
+	// Initialize client
+	await client.initialize();
 
-// Generates a qr in the console (for authentication)
-client.on('qr', qr => {
-	qrcode.generate(qr, {small: true});
-});
+	// Generates a QR code in the console for authentication.
+	client.on('qr', qr => {
+		qrcode.generate(qr, {small: true});
+	});
 
-//Log successful client connection
-client.on('ready', () => {
-	console.log('Client is ready!');
-});
+	// Log successful client connection
+	client.on('ready', () => {
+		console.log('Client is ready!');
+	});
 
-// Main
-// Reply to me and contacts
-client.on('message_create', async message => {
-	let [Contact, Listed] = await ContactsWhiteList(message.from);
-	if (message.fromMe) {
-		Listed = 1;
-	}
-	// Listed variable returns 1 if contact it's in contact list or me
-	if (Listed === 1) {
-		//Mensajes automatizados
-		AutomatedMessages(message);
+	// Reply to me and contacts
+	client.on('message_create', async message => {
+		let [contact, listed] = await ContactsWhiteList(message.from);
+		if (message.fromMe) {
+			listed = 1;
+		}
+		// Listed variable returns 1 if contact it's in contact list or me
+		if (listed === 1) {
+			//Mensajes automatizados
+			AutomatedMessages(message);
 
-		// Generate a date and hour based on the timestamp (just for debug)
-		const [formattedTime, formattedDate] = GetDate(message.timestamp);
+			// Generate a date and hour based on the timestamp (just for debug)
+			const [formattedTime, formattedDate] = GetDate(message.timestamp);
 
-		console.log('\x1b[32m%s:\x1b[0m %s \x1b[5m%s\x1b[0m', Contact, message.type, formattedTime);
-	}
-});
+			console.log('\x1b[32m%s:\x1b[0m %s \x1b[5m%s\x1b[0m', contact, message.type, formattedTime);
+		}
+	});
+}
 
 // Contact white list. If the sender is your contact, the audio file will be transcript
 async function ContactsWhiteList(Contact) {
@@ -93,16 +71,16 @@ async function ContactsWhiteList(Contact) {
 
 // Date and hour based on the timestamp of the mesage (unix time)
 function GetDate(timestamp) {
-		var date = new Date(timestamp * 1000);
-		var year = date.getFullYear();
-		var month = date.getMonth();
-		var day = date.getDate();
-		var hours = date.getHours();
-		var minutes = "0" + date.getMinutes();
-		var seconds = "0" + date.getSeconds();
+		const date = new Date(timestamp * 1000);
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const day = date.getDate();
+		const hours = date.getHours();
+		const minutes = '0' + date.getMinutes();
+		const seconds = '0' + date.getSeconds();
 
-		var formattedDate = day+"-"+month+"-"+year;
-		var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+		const formattedDate = `${year}-${month}-${day}`;
+		const formattedTime = hours + ':' + minutes.substring(-2) + ':' + seconds.substring(-2);
 
 		return [formattedTime, formattedDate];
 }
@@ -122,7 +100,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 		  }
 		}
 	  } catch (err) {
-		console.log(`Error fetching messages. Retrying in 5 seconds... (attempt ${counter}/${maxRetries})`);
+		console.warn(`Error fetching messages. Retrying in 5 seconds... (attempt ${counter}/${maxRetries})`);
 		await new Promise(resolve => setTimeout(resolve, 5000));
 	  }
   
@@ -130,7 +108,7 @@ async function downloadQuotedMedia(quotedMsg, messageId, chat, maxRetries = 5) {
 	}
   
 	if (!attachmentData) {
-	  console.log(`Could not download quoted media after ${maxRetries} attempts.`);
+	  console.log(`Could not download media after ${maxRetries} attempts.`);
 	}
   
 	return attachmentData;
@@ -210,7 +188,7 @@ async function SpeechToTextTranscript(base64data, message) {
 	return new Promise((resolve, reject) => {
 		request.post({
 			// This url is the url of the Flask API that handles the transcription using Whisper
-			url: 'http://'+ apiHost +':5000',
+			url: env.whisperAPIAddress,
 			formData: {
 			file: {
 			  value: decodedBuffer,
@@ -230,3 +208,5 @@ async function SpeechToTextTranscript(base64data, message) {
 	});
 }
 
+// Start the script.
+init();
