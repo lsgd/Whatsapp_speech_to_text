@@ -70,14 +70,21 @@ client.on('message_create', async message => {
 	}
 	// Listed variable returns 1 if contact it's in contact list or me
 	if (Listed === 1) {
-		//Mensajes automatizados
-		AutomatedMessages(message);
 
+	    if (automaticTranscription){
+		    //Mensajes automatizados
+		    AutomatedMessages(message);
+        }else{
+            console.log('Automatic Transcription is off: ignoring message');
+        }
 		// Generate a date and hour based on the timestamp (just for debug)
 		const [formattedTime, formattedDate] = GetDate(message.timestamp);
 
 		console.log('\x1b[32m%s:\x1b[0m %s \x1b[5m%s\x1b[0m', Contact, message.type, formattedTime);
-	}
+	}else{
+	    console.log(message);
+	    console.log('Message is from unknown contact: ignoring');
+    }
 });
 
 // Contact white list. If the sender is your contact, the audio file will be transcript
