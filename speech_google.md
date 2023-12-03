@@ -89,12 +89,13 @@ You need to pass the following environment variables in order to run our node se
 API.
 
 1. `SPEECH_RECOGNITION_SYSTEM = 'google'` to tell the node service to use the Google backends.
-2. `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE = './path/to/the/service-account/credentials.json'` contains the path to the
+2. `GOOGLE_CLOUD_PROJECT_ID = 'project-id'` is your Google Cloud project ID.
+3. `GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE = './path/to/the/service-account/credentials.json'` contains the path to the
    JSON key of our service account.
-3. `GOOGLE_CLOUD_STORAGE_BUCKET = 'name-of-your-bucket'` points to the created Google Cloud Storage bucket.
-4. `GOOGLE_CLOUD_SPEECH_LANGUAGE = 'de-CH'` should point to the BCP-47 language code of the most-spoken language of your
+4. `GOOGLE_CLOUD_STORAGE_BUCKET = 'name-of-your-bucket'` points to the created Google Cloud Storage bucket.
+5. `GOOGLE_CLOUD_SPEECH_LANGUAGE = 'de-CH'` should point to the BCP-47 language code of the most-spoken language of your
    voice messages.
-5. `GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES = 'en-US,it-IT,nl-BE'`. You can provide up to 3 alternative BCP-47
+6. `GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES = 'en-US,it-IT,nl-BE'`. You can provide up to 3 alternative BCP-47
    language codes in which your voice messages are spoken.
     - Provide a single alternative language: `'de-CH'`
     - Do not add a trailing comma! Bad: `'de-CH,en-US,'`, Good: `'de-CH,en-US'`

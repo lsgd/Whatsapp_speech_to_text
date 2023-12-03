@@ -7,14 +7,14 @@ const env = require('./environment');
 const request = require("request");
 
 const storage = new Storage({
-    projectId: env.googleCloudStorageBucket,
-    keyFilename: env.googleServiceAccountCredentialsFile,
+    projectId: env.googleCloudProjectID,
+    keyFilename: env.googleCloudServiceAccountCredentialsFile,
 });
 
 // Creates a client
 const client = new speech.SpeechClient({
-    projectId: env.googleCloudStorageBucket,
-    keyFilename: env.googleServiceAccountCredentialsFile,
+    projectId: env.googleCloudProjectID,
+    keyFilename: env.googleCloudServiceAccountCredentialsFile,
 });
 
 async function transcribeSpeechToText(gcsURI) {

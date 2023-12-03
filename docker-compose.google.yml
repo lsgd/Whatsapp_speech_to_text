@@ -14,8 +14,10 @@ services:
       AUTOMATIC_TRANSCRIPTION: true
       # Use Google as the speech recognition system.
       SPEECH_RECOGNITION_SYSTEM: 'google'
+      # Google Cloud Project ID.
+      GOOGLE_CLOUD_PROJECT_ID: 'my-google-cloud-project-id'
       # Credentials file matches the volume path for the service account credentials.
-      GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE: '/app/service-account.json'
+      GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE: '/app/service-account.json'
       # Google Cloud Storage bucket name.
       GOOGLE_CLOUD_STORAGE_BUCKET: 'my-google-cloud-storage-bucket-name'
       # BCP-47 language code of the main language of the voice audios

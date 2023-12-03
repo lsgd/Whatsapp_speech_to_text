@@ -35,8 +35,10 @@ let _sanitizedSpeechRecognitionSystem = '';
 switch (_speechRecognitionSystem) {
     case 'google':
         _sanitizedSpeechRecognitionSystem = _speechRecognitionSystem;
-        const googleServiceAccountCredentialsFile = getStringEnvVariable(process.env.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE, null);
-        exports.googleServiceAccountCredentialsFile = googleServiceAccountCredentialsFile;
+        const googleCloudProjectID = getStringEnvVariable(process.env.GOOGLE_CLOUD_PROJECT_ID, null);
+        exports.googleCloudProjectID = googleCloudProjectID;
+        const googleCloudServiceAccountCredentialsFile = getStringEnvVariable(process.env.GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE, null);
+        exports.googleCloudServiceAccountCredentialsFile = googleCloudServiceAccountCredentialsFile;
         const googleCloudStorageBucket = getStringEnvVariable(process.env.GOOGLE_CLOUD_STORAGE_BUCKET, null);
         exports.googleCloudStorageBucket = googleCloudStorageBucket;
         const googleCloudSpeechLanguage = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_LANGUAGE, null);
@@ -47,12 +49,16 @@ switch (_speechRecognitionSystem) {
         const googleCloudSpeechAlternativeLanguages = _alternativeLanguages.map(result => result.trim()).filter(Boolean);
         exports.googleCloudSpeechAlternativeLanguages = googleCloudSpeechAlternativeLanguages;
 
-        if (googleServiceAccountCredentialsFile == null) {
-            throw new Error('Environment variable GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE is required '
+        if (googleCloudProjectID == null) {
+            throw new Error('Environment variable GOOGLE_CLOUD_PROJECT_ID is required '
                 + 'when using `google` as the speech recognition system.');
         }
-        if (!fs.existsSync(googleServiceAccountCredentialsFile)) {
-            throw new Error('Environment variable GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE needs to point '
+        if (googleCloudServiceAccountCredentialsFile == null) {
+            throw new Error('Environment variable GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE is required '
+                + 'when using `google` as the speech recognition system.');
+        }
+        if (!fs.existsSync(googleCloudServiceAccountCredentialsFile)) {
+            throw new Error('Environment variable GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE needs to point '
                 + 'to a JSON file containing the service account\'s credentials '
                 + 'when using `google` as the speech recognition system.');
         }
