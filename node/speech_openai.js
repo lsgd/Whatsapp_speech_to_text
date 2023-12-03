@@ -16,7 +16,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
             .setFfmpegPath(ffmpegPath)
             .audioBitrate('16k')
             .format('mp3')
-            .output(destStream)
+            //.output(destStream)
             .on('error', reject)
             .on('exit', (code, signal) => {
                 console.log(`ffmpeg [exit] code:${code} signal:${signal}`);
@@ -38,7 +38,8 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                 }
                 return resolve(JSON.stringify({'results': [{'filename': destFile, 'transcript': transcription.text}]}));
             })
-            .run();
+            .pipe(destStream, { end: true });
+            //.run();
     });
 }
 
