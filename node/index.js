@@ -1,5 +1,3 @@
-const fs = require('fs');
-
 // Required for terminal QRCode to authorize against WhatsApp.
 const qrcode = require('qrcode-terminal');
 
@@ -9,6 +7,7 @@ const {Client, LocalAuth} = require('whatsapp-web.js');
 const env = require('./environment');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
+const speechOpenAI = require('./speech_openai');
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
@@ -157,7 +156,14 @@ async function ProcessMessage(message) {
 
     // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
     const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
-    let callback = env.speechRecognitionSystem === 'google' ? speechGoogle.transcribe : speechWhisper.transcribe;
+    let callback = null;
+    if (env.speechRecognitionSystem === 'google') {
+        callback = speechGoogle.transcribe;
+    } else if (env.speechRecognitionSystem === 'openai') {
+        callback = speechOpenAI.transcribe;
+    } else {
+        callback = speechWhisper.transcribe;
+    }
     callback(binaryVoiceBuffer, messageId, message)
         .then((body) => {
             const data = JSON.parse(body);

@@ -75,6 +75,15 @@ switch (_speechRecognitionSystem) {
                 + 'can only have up to 3 comma-separated values.');
         }
         break;
+    case 'openai':
+        // The OpenAI class automatically gets the key from the environment variable.
+        // We only check that this variable is set and do not export its value;
+        const _openAIAPIKey = getStringEnvVariable(process.env.OPENAI_API_KEY, null);
+        if (_openAIAPIKey == null) {
+            throw new Error('Environment variable OPENAI_API_KEY is required '
+                + 'when using `openai` as the speech recognition system.');
+        }
+        break;
     case 'whisper':
     default:
         _sanitizedSpeechRecognitionSystem = 'whisper';
