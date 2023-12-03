@@ -6,9 +6,9 @@ const qrcode = require('qrcode-terminal');
 // Required for Whatsapp Web connection.
 const {Client, LocalAuth} = require('whatsapp-web.js');
 
-const env = require('./environment.js');
-const speechWhisper = require('./speech_whisper.js');
-const speechGoogle = require('./speech_google.js');
+const env = require('./environment');
+const speechWhisper = require('./speech_whisper');
+const speechGoogle = require('./speech_google');
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
