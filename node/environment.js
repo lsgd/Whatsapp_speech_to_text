@@ -43,7 +43,8 @@ switch (_speechRecognitionSystem) {
         exports.googleCloudSpeechLanguage = googleCloudSpeechLanguage;
 
         const _alternativeLanguages = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES, '').split(',');
-        const googleCloudSpeechAlternativeLanguages = _alternativeLanguages.map(result => result.trim());
+        // $array.filter(Boolean) filters out all empty elements.
+        const googleCloudSpeechAlternativeLanguages = _alternativeLanguages.map(result => result.trim()).filter(Boolean);
         exports.googleCloudSpeechAlternativeLanguages = googleCloudSpeechAlternativeLanguages;
 
         if (googleServiceAccountCredentialsFile == null) {
