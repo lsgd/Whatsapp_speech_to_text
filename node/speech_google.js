@@ -4,7 +4,6 @@ const {Storage} = require('@google-cloud/storage');
 
 
 const env = require('./environment');
-const request = require("request");
 
 const storage = new Storage({
     projectId: env.googleCloudProjectID,
