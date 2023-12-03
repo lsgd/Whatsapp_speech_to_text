@@ -12,6 +12,9 @@ RUN \
 RUN mkdir /app
 
 COPY index.js /app/index.js
+COPY environment.js /app/environment.js
+COPY speech_google.js /app/speech_google.js
+COPY speech_whisper.js /app/speech_whisper.js
 COPY package.json /app/package.json
 
 WORKDIR /app
