@@ -34,7 +34,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                 const transcription = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(destFile),
                     model: 'whisper-1',
-                    response_format: 'text',
+                    response_format: 'json',
                 });
                 console.log(`Transcription successful! OpenAI Whisper API responded with: ${transcription.text}`);
                 if (fs.existsSync(destFile)) {
