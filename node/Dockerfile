@@ -1,5 +1,8 @@
 FROM node
 
+# Install ffmpeg
+RUN apt-get update && apt-get install -y ffmpeg
+
 # Install Chromium.
 RUN \
   wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
