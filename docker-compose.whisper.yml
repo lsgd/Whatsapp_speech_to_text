@@ -5,10 +5,10 @@ services:
     build:
       context: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:api
       args:
-        MODEL_VERSION: 'large'
+        MODEL_VERSION: 'tiny'
     container_name: 'speech_to_text_whisper_api'
     environment:
-      MODEL_VERSION: 'large'
+      MODEL_VERSION: 'tiny'
     networks:
       whatsapp_network:
         ipv4_address: ${IPV4_NETWORK:-172.68}.2.1
@@ -21,9 +21,14 @@ services:
     depends_on:
       - speech_to_text_whisper_api
     environment:
-      WHISPER_API_ADDRESS: 'http://speech_to_text_whisper_api:5000'
+      # Location of the WhatsApp-web chrome session. Matches the volume path from above.
       CHROME_DATA_PATH: '/app/data/'
+      # Transcribe incoming voice messages automatically.
       AUTOMATIC_TRANSCRIPTION: true
+      # Use Google as the speech recognition system.
+      SPEECH_RECOGNITION_SYSTEM: 'google'
+      # URL to the API of our Whisper container.
+      WHISPER_API_ADDRESS: 'http://speech_to_text_whisper_api:5000'
     networks:
       whatsapp_network:
         ipv4_address: ${IPV4_NETWORK:-172.68}.2.2

@@ -1,0 +1,36 @@
+version: '3.5'
+
+services:
+  speech_to_text_node:
+    build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
+    container_name: 'speech_to_text_node'
+    volumes:
+       - './node/data:/app/data:rw'
+       - '/path/to/my/service-account/credentials.json:/app/service-account.json:r'
+    environment:
+      # Location of the WhatsApp-web chrome session. Matches the volume path from above.
+      CHROME_DATA_PATH: '/app/data/'
+      # Transcribe incoming voice messages automatically.
+      AUTOMATIC_TRANSCRIPTION: true
+      # Use Google as the speech recognition system.
+      SPEECH_RECOGNITION_SYSTEM: 'google'
+      # Credentials file matches the volume path for the service account credentials.
+      GOOGLE_SERVICE_ACCOUNT_CREDENTIALS_FILE: '/app/service-account.json'
+      # Google Cloud Storage bucket name.
+      GOOGLE_CLOUD_STORAGE_BUCKET: 'my-google-cloud-storage-bucket-name'
+      # BCP-47 language code of the main language of the voice audios
+      GOOGLE_CLOUD_SPEECH_LANGUAGE: 'de-DE'
+      # Comma-separated list of up to 3 other spoken languages of your voice audios.
+      # Use BCP-47 language code, if empty, no other language is provided.
+      GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES: 'en-US,en-GB,de-CH'
+    networks:
+      whatsapp_network:
+        ipv4_address: ${IPV4_NETWORK:-172.68}.2.2
+
+networks:
+  whatsapp_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.68.0.0/16
