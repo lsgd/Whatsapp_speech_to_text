@@ -1,6 +1,7 @@
 const {OpenAI, toFile} = require('openai');
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
+const env = require("./environment");
 
 // Gets API key from environment variable process.env.OPENAI_API_KEY
 const openai = new OpenAI();
@@ -34,13 +35,27 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                 const transcription = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(destFile),
                     model: 'whisper-1',
-                    response_format: 'json',
+                    response_format: 'verbose_json',
                 });
-                console.log(`Transcription successful! OpenAI Whisper API responded with: ${transcription.text}`);
+                let text = transcription.text;
+
+                if (transcription.language && env.openAITranslateToEnglish && !env.openAIExcludedTranslationLanguages.includes(transcription.language.toLowerCase())) {
+                    const translation = await openai.audio.translations.create({
+                        file: fs.createReadStream(destFile),
+                        model: 'whisper-1',
+                        response_format: 'verbose_json',
+                    });
+                    text = translation.text;
+                    console.log(`Transcription with Translation successful! OpenAI Whisper API responded with: ${text}`);
+                }
+                else {
+                    console.log(`Transcription successful! OpenAI Whisper API responded with: ${text}`);
+                }
+
                 if (fs.existsSync(destFile)) {
                     fs.unlinkSync(destFile);
                 }
-                return resolve(JSON.stringify({'results': [{'filename': destFile, 'transcript': transcription.text}]}));
+                return resolve(JSON.stringify({'results': [{'filename': destFile, 'transcript': text}]}));
             })
             .run();
     });

@@ -80,6 +80,15 @@ switch (_speechRecognitionSystem) {
         // The OpenAI class automatically gets the key from the environment variable.
         // We only check that this variable is set and do not export its value;
         const _openAIAPIKey = getStringEnvVariable(process.env.OPENAI_API_KEY, null);
+
+        const openAITranslateToEnglish = getBooleanEnvVariable(process.env.OPENAI_TRANSLATE_TO_ENGLISH);
+        exports.openAITranslateToEnglish = openAITranslateToEnglish;
+
+        const _excludedLanguages = getStringEnvVariable(process.env.OPENAI_EXCLUDED_TRANSLATION_LANGUAGES, '').toLowerCase().split(',');
+        // $array.filter(Boolean) filters out all empty elements.
+        const openAIExcludedTranslationLanguages = _excludedLanguages.map(result => result.trim()).filter(Boolean);
+        exports.openAIExcludedTranslationLanguages = openAIExcludedTranslationLanguages;
+
         if (_openAIAPIKey == null) {
             throw new Error('Environment variable OPENAI_API_KEY is required '
                 + 'when using `openai` as the speech recognition system.');
