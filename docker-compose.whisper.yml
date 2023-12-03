@@ -17,7 +17,7 @@ services:
     build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
     container_name: 'speech_to_text_node'
     volumes:
-       - ./node/data:/app/data/
+       - './node/data:/app/data:rw'
     depends_on:
       - speech_to_text_whisper_api
     environment:
