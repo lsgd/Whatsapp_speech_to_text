@@ -1,5 +1,7 @@
 # Whatsapp Speech To Text
-This is a Speech-to-Text application for Whatsapp that uses [Whisper](https://github.com/openai/whisper) and [Whatsapp-Web.js](https://github.com/pedroslopez/whatsapp-web.js), running on Docker
+This is a Speech-to-Text application for Whatsapp that uses [Whatsapp-Web.js](https://github.com/pedroslopez/whatsapp-web.js) running on Docker and supports different speech recognition systems:
+- [Whisper](https://github.com/openai/whisper)
+- [Google Speech-to-Text](https://cloud.google.com/speech-to-text) 
 
 <p align="left">
   <img src="https://github.com/altbert/Whatsapp_speech_to_text/raw/main/media/Screenshot.jpg" width="400" title="Example">
