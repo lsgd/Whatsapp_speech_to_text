@@ -121,7 +121,7 @@ async function getMessageToTranscribe(message) {
         return message;
     }
 
-    if (message.body.trim() === env.translationCommand && message.hasQuotedMsg) {
+    if (message.body.trim() === env.transcriptionCommand && message.hasQuotedMsg) {
         const quotedMsg = await message.getQuotedMessage();
         if (quotedMsg.hasMedia) {
             return quotedMsg;

@@ -19,9 +19,9 @@ function getStringEnvVariable(variable, defaultValue) {
 const process = require('node:process');
 
 
-// chromeDataPath is the path where the Google Chrome session will be stored.
-const translationCommand = getStringEnvVariable(process.env.TRANSLATION_COMMAND, '!tran');
-exports.translationCommand = translationCommand;
+// Transcription command to use when manually triggering transcriptions.
+const transcriptionCommand = getStringEnvVariable(process.env.TRANSCRIPTION_COMMAND, '!tran');
+exports.transcriptionCommand = transcriptionCommand;
 
 // chromeDataPath is the path where the Google Chrome session will be stored.
 const chromeDataPath = getStringEnvVariable(process.env.CHROME_DATA_PATH, './');
@@ -32,7 +32,7 @@ const automaticTranscription = getBooleanEnvVariable(process.env.AUTOMATIC_TRANS
 exports.automaticTranscription = automaticTranscription;
 console.log(automaticTranscription
     ? 'Automatic transcription for incoming voice messages is enabled.'
-    : `Automatic transcription for incoming voice messages is not enabled. You need to use '${translationCommand}'`);
+    : `Automatic transcription for incoming voice messages is not enabled. You need to use '${transcriptionCommand}'`);
 
 const _speechRecognitionSystem = getStringEnvVariable(process.env.SPEECH_RECOGNITION_SYSTEM, '').toLowerCase();
 let _sanitizedSpeechRecognitionSystem = '';
