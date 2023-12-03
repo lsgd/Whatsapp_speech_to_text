@@ -21,7 +21,7 @@ services:
     depends_on:
       - speech_to_text_whisper_api
     environment:
-      API_ADDRESS: speech_to_text_whisper_api
+      WHISPER_API_ADDRESS: 'http://speech_to_text_whisper_api:5000'
       CHROME_DATA_PATH: '/app/data/'
       AUTOMATIC_TRANSCRIPTION: true
     networks:
