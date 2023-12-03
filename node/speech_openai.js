@@ -5,6 +5,9 @@ const fs = require('fs');
 // Gets API key from environment variable process.env.OPENAI_API_KEY
 const openai = new OpenAI();
 
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+ffmpeg.setFfmpegPath(ffmpegPath);
+
 async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
     return new Promise(async (resolve, reject) => {
         const destFile = `/tmp/${message.timestamp}_${voiceMessageId}.mp3`;
