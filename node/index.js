@@ -64,9 +64,9 @@ client.on('ready', () => {
 // Reply to me and contacts
 client.on('message_create', async message => {
 	let [Contact, Listed] = await ContactsWhiteList(message.from);
+	ProcessCommands(message);
 	if (message.fromMe) {
 		Listed = 1;
-		ProcessCommands(message);
 	}
 	// Listed variable returns 1 if contact it's in contact list or me
 	if (Listed === 1) {
@@ -241,9 +241,10 @@ async function SpeechToTextTranscript(base64data, message) {
 }
 
 async function ProcessCommands(message){
-	switch (message.body){
+    if (message.fromMe){
+        switch (message.body){
 		case '!transcribe':
-		case '!tran':
+		case '!t':
 			{
 				AutomatedMessages(message);
 			}
@@ -266,10 +267,30 @@ async function ProcessCommands(message){
 		case '!help':
 			message.reply(
 				`Transcriber bot commands:
-Answer *!transcribe* or *!tran* to a voice message to transcribe it
+Answer *!transcribe* or *!t* to a voice message to transcribe it
 Send *!toggle-transcribe* to disable automatic transcription (global setting)
 Send *!status* to display the bot status
 Send *!help* to display this message`);
-	}
+        }
+    }else{
+        switch (message.body){
+		case '!transcribe':
+		case '!t':
+			{
+				AutomatedMessages(message);
+			}
+			break;
+		case '!toggle_transcribe':
+		case '!toggle-transcribe':
+			{
+                sendMessage(message.from, 'lol');
+			}
+			break;
+		case '!status':
+			break;
+		case '!help':
+                sendMessage(message.from, 'are you ok?');
+        }
+    }
 }
 
