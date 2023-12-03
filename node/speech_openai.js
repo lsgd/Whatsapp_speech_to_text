@@ -37,6 +37,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                     model: 'whisper-1',
                     response_format: 'verbose_json',
                 });
+                console.log(`Transcription successful! Detected language: ${transcription.language}.\nText: ${transcription.text}`);
                 let text = transcription.text;
 
                 if (transcription.language && env.openAITranslateToEnglish && !env.openAIExcludedTranslationLanguages.includes(transcription.language.toLowerCase())) {
@@ -46,10 +47,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                         response_format: 'verbose_json',
                     });
                     text = translation.text;
-                    console.log(`Transcription with Translation successful! OpenAI Whisper API responded with: ${text}`);
-                }
-                else {
-                    console.log(`Transcription successful! OpenAI Whisper API responded with: ${text}`);
+                    console.log(`Translation successful!\nText: ${text}`);
                 }
 
                 if (fs.existsSync(destFile)) {
