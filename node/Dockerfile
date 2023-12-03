@@ -16,6 +16,7 @@ COPY environment.js /app/environment.js
 COPY speech_google.js /app/speech_google.js
 COPY speech_whisper.js /app/speech_whisper.js
 COPY speech_openai.js /app/speech_openai.js
+COPY languages.js /app/languages.js
 COPY package.json /app/package.json
 
 WORKDIR /app

@@ -23,6 +23,10 @@ const process = require('node:process');
 const transcriptionCommand = getStringEnvVariable(process.env.TRANSCRIPTION_COMMAND, '!tran');
 exports.transcriptionCommand = transcriptionCommand;
 
+// System language in ISO 639-1 defines which language will be used in WhatsApp for the user-visible text.
+const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, '!tran');
+exports.systemLanguage = systemLanguage;
+
 // chromeDataPath is the path where the Google Chrome session will be stored.
 const chromeDataPath = getStringEnvVariable(process.env.CHROME_DATA_PATH, './');
 exports.chromeDataPath = chromeDataPath;

@@ -5,6 +5,7 @@ const qrcode = require('qrcode-terminal');
 const {Client, LocalAuth} = require('whatsapp-web.js');
 
 const env = require('./environment');
+const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
@@ -17,10 +18,6 @@ const client = new Client({
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     }
 });
-
-// Header that the reply message will have, following by the transcription
-const responseMsgHeader = "*Transkript:*\n";
-const responseMsgHeaderError = "*Fehler:* Die Sprachnachricht konnte nicht transkribiert werden."
 
 async function init() {
     // Initialize client
@@ -169,14 +166,14 @@ async function ProcessMessage(message) {
             const data = JSON.parse(body);
             for (const result of data.results) {
                 const transcript = result.transcript;
-                chat.sendMessage(responseMsgHeader + transcript, {
+                chat.sendMessage(languages.successHeader + transcript, {
                     quotedMessageId: messageId
                 });
             }
         })
         .catch((err) => {
             console.error(err);
-            chat.sendMessage(responseMsgHeaderError, {
+            chat.sendMessage(languages.errorHeader, {
                 quotedMessageId: messageId
             });
         });
