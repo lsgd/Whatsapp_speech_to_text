@@ -76,6 +76,7 @@ switch (_speechRecognitionSystem) {
         }
         break;
     case 'openai':
+        _sanitizedSpeechRecognitionSystem = _speechRecognitionSystem;
         // The OpenAI class automatically gets the key from the environment variable.
         // We only check that this variable is set and do not export its value;
         const _openAIAPIKey = getStringEnvVariable(process.env.OPENAI_API_KEY, null);
