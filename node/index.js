@@ -158,7 +158,7 @@ async function ProcessMessage(message) {
     // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
     const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
     let callback = env.speechRecognitionSystem === 'google' ? speechGoogle.transcribe : speechWhisper.transcribe;
-    callback(binaryVoiceBuffer, message)
+    callback(binaryVoiceBuffer, messageId, message)
         .then((body) => {
             const data = JSON.parse(body);
             for (const result of data.results) {
