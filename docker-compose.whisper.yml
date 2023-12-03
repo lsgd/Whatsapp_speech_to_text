@@ -26,7 +26,7 @@ services:
       # Transcribe incoming voice messages automatically.
       AUTOMATIC_TRANSCRIPTION: true
       # Use Google as the speech recognition system.
-      SPEECH_RECOGNITION_SYSTEM: 'google'
+      SPEECH_RECOGNITION_SYSTEM: 'whisper'
       # URL to the API of our Whisper container.
       WHISPER_API_ADDRESS: 'http://speech_to_text_whisper_api:5000'
     networks:
