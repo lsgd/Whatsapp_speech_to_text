@@ -6,7 +6,7 @@ to text.
 The API requires us to upload the voice audio to Google Cloud Storage to also support audio snippets that are longer
 than 1 minute.
 
-[!NOTE]
+[!NOTE]  
 Using Google Cloud Storage and Google Speech-to-Text can result in costs that you will be charged for from Google.
 
 ## 1. Workflow
@@ -63,7 +63,7 @@ account.
 A download with the key will automatically start. We need this key to later access the Speech-to-Text API and to upload
 files to Cloud Storage.
 
-[!CAUTION]
+[!CAUTION]  
 Never upload the downloaded JSON key to GitHub or other publicly accessible locations!
 
 ### 2.5 Create a budget alert for exceeded costs
@@ -77,7 +77,7 @@ Go to https://cloud.google.com/billing/docs/how-to/budgets and follow the instru
 
 Since the costs for this project should be very low, a recommended alert threshold is USD $10.
 
-[!IMPORTANT]
+[!IMPORTANT]  
 Setting up a budget alert is strongly recommended. An alert could unveil that your setup is malfunctioning, is getting
 heavily abused or your service account's credentials are compromised. In any case, you should start investigating!
 
