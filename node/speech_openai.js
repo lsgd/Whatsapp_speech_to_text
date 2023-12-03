@@ -5,7 +5,7 @@ const openai = new OpenAI();
 let ffmpeg = require('fluent-ffmpeg')
 let fs = require('fs')
 
-async function transcribe(binaryVoiceBuffer: Buffer, voiceMessageId, message) {
+async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
     return new Promise(async (resolve, reject) => {
         const destFile = `/tmp/${message.timestamp}_${voiceMessageId}.mp3`;
         ffmpeg(binaryVoiceBuffer)
