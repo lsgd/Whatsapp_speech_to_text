@@ -4,11 +4,11 @@
 const fs = require('fs');
 
 function getBooleanEnvVariable(variable) {
-    return variable && variable.toString().toLowerCase() == 'true';
+    return variable && variable.toString().toLowerCase() === 'true';
 }
 
 function getStringEnvVariable(variable, defaultValue) {
-    if (variable == undefined || variable == null) {
+    if (variable === undefined || variable === null) {
         return defaultValue;
     }
     return variable;
