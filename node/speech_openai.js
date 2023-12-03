@@ -10,11 +10,13 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
     return new Promise(async (resolve, reject) => {
         const destFile = `/tmp/${message.timestamp}_${voiceMessageId}.mp3`;
+
+        let destStream = fs.createWriteStream(destFile);
         ffmpeg(binaryVoiceBuffer)
             .setFfmpegPath(ffmpegPath)
             .audioBitrate('16k')
             .format('mp3')
-            .output(destFile)
+            .output(destStream)
             .on('error', reject)
             .on('exit', (code, signal) => {
                 console.log(`ffmpeg [exit] code:${code} signal:${signal}`);
