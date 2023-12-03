@@ -13,7 +13,6 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
         const destFile = `/tmp/${message.timestamp}_${voiceMessageId}.mp3`;
         fs.writeFileSync(srcFile, binaryVoiceBuffer);
 
-        let destStream = fs.createWriteStream(destFile);
         ffmpeg(srcFile)
             .setFfmpegPath(ffmpegPath)
             .audioBitrate('16k')
@@ -29,8 +28,11 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
             .on('end', async function () {
                 console.log("ffmpeg [end]");
                 console.log('Finished converting voice message from OGG to MP3.');
+                if (fs.existsSync(srcFile)) {
+                    fs.unlinkSync(srcFile);
+                }
                 const transcription = await openai.audio.transcriptions.create({
-                    file: await toFile(binaryVoiceBuffer, destFile),
+                    file: fs.createReadStream(destFile),
                     model: 'whisper-1',
                     response_format: 'text',
                 });
@@ -40,8 +42,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                 }
                 return resolve(JSON.stringify({'results': [{'filename': destFile, 'transcript': transcription.text}]}));
             })
-            .pipe(destStream, { end: true });
-            //.run();
+            .run();
     });
 }
 
