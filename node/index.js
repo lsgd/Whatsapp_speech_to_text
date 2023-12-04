@@ -142,40 +142,53 @@ async function getMessageToTranscribe(message) {
 async function ProcessCommandMessage(message) {
     if (!message.fromMe) {
         // Only we are allowed to send commands to the bot!
+        let [contactName, trustedContact] = await ContactsWhiteList(message.from);
+        console.log(`User "${contactName}" tried to use the bot commands.`);
         return;
     }
 
     const chat = await message.getChat();
     const command = message.body.trim().toLowerCase();
+    const messageId = message.id._serialized;
     if (command === '!help') {
-        message.reply('*Transkription-Bot:*\n' +
+        await chat.sendMessage('*Transkription-Bot:*\n' +
             `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
             `- "!transcription-global=on/off": Transkription global an- oder abschalten.\n` +
             `- "!transcription=on/off": Transkription für diesen Chat an- oder abschalten.\n` +
             `- "!status": Aktuellen Status einsehen.\n`
-                `- "!help": Diesen Hilfetext anzeigen.`);
+                `- "!help": Diesen Hilfetext anzeigen.`, {
+            quotedMessageId: messageId
+        });
         return true;
     }
     if (command === '!status') {
         const globalActive = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
         const chatActive = chatTranscriptionsDisabled[chat.id._serialized] === true ? 'deaktiviert' : 'aktiviert';
-        message.reply('*Transkription-Bot:*\n' +
+        await chat.sendMessage('*Transkription-Bot:*\n' +
             `- Globale Transkription ist ${globalActive}\n` +
-            `- Transkription für diesen Chat ist ${chatActive}`);
+            `- Transkription für diesen Chat ist ${chatActive}`, {
+            quotedMessageId: messageId
+        });
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
         globalTranscriptionDisabled = command.endsWith('off');
         const active = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
-        message.reply(`*Transkription-Bot:*\nGlobale Transkription ist ab jetzt ${active}.`);
+        await chat.sendMessage(`*Transkription-Bot:*\nGlobale Transkription ist ab jetzt ${active}.`, {
+            quotedMessageId: messageId
+        });
         return true;
     }
     if (command === '!transcription=on' || command === '!transcription=off') {
         chatTranscriptionsDisabled[chat.id._serialized] = command.endsWith('off');
         const active = command.endsWith('off') ? 'deaktiviert' : 'aktiviert';
-        message.reply(`*Transkription-Bot:*\nTranskription in diesem Chat ist ab jetzt ${active}.`);
+        await chat.sendMessage(`*Transkription-Bot:*\nTranskription in diesem Chat ist ab jetzt ${active}.`, {
+            quotedMessageId: messageId
+        });
         return true;
     }
+
+    console.log(`You sent an unknown command "${command}".`);
 
     return false;
 }
