@@ -40,7 +40,7 @@ async function init() {
         if (listed === 1) {
             // Generate a date and hour based on the timestamp (just for debug)
             const [formattedTime, formattedDate] = GetDate(message.timestamp);
-            console.log('\x1b[32m%s:\x1b[0m %s \x1b[5m%s\x1b[0m', contact, message.type, formattedTime);
+            console.log('\x1b[32m%s:\x1b[0m %s %s', contact, message.type, formattedTime);
             //Process message for voice transcription.
             await ProcessMessage(message);
         }
