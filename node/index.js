@@ -135,7 +135,7 @@ async function getMessageToTranscribe(message) {
         if (chatTranscriptionsDisabled[chat.id._serialized] === true) {
             return null;
         }
-        
+
         return message;
     }
 
@@ -198,7 +198,9 @@ async function ProcessCommandMessage(message) {
         return true;
     }
 
-    console.log(`You sent an unknown command "${command}".`);
+    if(command.startsWith('!') && command.length > 1) {
+        console.log(`You sent an unknown command "${command}".`);
+    }
 
     return false;
 }
