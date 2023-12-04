@@ -32,18 +32,21 @@ async function init() {
 
     // Reply to me and contacts
     client.on('message_create', async message => {
-        let [contact, listed] = await ContactsWhiteList(message.from);
+        let [contactName, trustedContact] = await ContactsWhiteList(message.from);
         if (message.fromMe) {
-            listed = 1;
+            trustedContact = true;
         }
-        // Listed variable returns 1 if contact is in contact list or me
-        if (listed === 1) {
-            // Generate a date and hour based on the timestamp (just for debug)
-            const [formattedTime, formattedDate] = GetDate(message.timestamp);
-            console.log('\x1b[32m%s:\x1b[0m %s %s', contact, message.type, formattedTime);
-            //Process message for voice transcription.
-            await ProcessVoiceMessage(message);
+        // Do not process the message if sender is not a trusted contact (in adress book or myself).
+        if (!trustedContact) {
+            return;
         }
+
+        // Generate a date and hour based on the timestamp (just for debugging)
+        const [formattedTime, formattedDate] = GetDate(message.timestamp);
+        console.log('\x1b[32m%s:\x1b[0m %s %s', contactName, message.type, formattedTime);
+        
+        //Process message for voice transcription.
+        await ProcessVoiceMessage(message);
     });
 
     // Initialize client
@@ -57,9 +60,9 @@ async function ContactsWhiteList(Contact) {
     Contact = ContactInfo.name
 
     if (ContactInfo.isMyContact) {
-        return [Contact, 1];
+        return [Contact, true];
     } else {
-        return [Contact, 0];
+        return [Contact, false];
     }
 }
 
