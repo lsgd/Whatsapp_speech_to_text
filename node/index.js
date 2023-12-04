@@ -198,7 +198,7 @@ async function ProcessCommandMessage(message) {
         return true;
     }
 
-    if(command.startsWith('!') && command.length > 1) {
+    if(command.startsWith('!') && command.length > 1 && !env.transcriptionCommands.includes(command)) {
         console.log(`You sent an unknown command "${command}".`);
     }
 
