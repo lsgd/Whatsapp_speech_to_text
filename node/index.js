@@ -19,6 +19,9 @@ const client = new Client({
     }
 });
 
+let chatTranscriptionsDisabled = {};
+let globalTranscriptionDisabled = false;
+
 async function init() {
     // Generates a QR code in the console for authentication.
     client.on('qr', qr => {
@@ -45,7 +48,12 @@ async function init() {
         const [formattedTime, formattedDate] = GetDate(message.timestamp);
         console.log('\x1b[32m%s:\x1b[0m %s %s', contactName, message.type, formattedTime);
 
-        //Process message for voice transcription.
+        if(message.fromMe && await ProcessCommandMessage(message)) {
+            // Do not continue to process the message;
+            return;
+        }
+
+        // Process message for voice transcription.
         await ProcessVoiceMessage(message);
     });
 
@@ -131,6 +139,41 @@ async function getMessageToTranscribe(message) {
     return null;
 }
 
+async function ProcessCommandMessage(message) {
+    const chat = await message.getChat();
+    const command = message.body.trim().toLowerCase();
+    if(command === '!help') {
+        message.reply('*Transkription-Bot*:\n' +
+            `- "!transcription-global=on/off": Transkription global an- oder abschalten.\n` +
+            `- "!transcription=on/off": Transkription für diesen Chat an- oder abschalten.\n` +
+            `- "!status": Aktuellen Status einsehen.\n`
+            `- "!help": Diesen Hilfetext anzeigen.`);
+        return true;
+    }
+    if(command === '!status') {
+        const globalActive = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
+        const chatActive = chatTranscriptionsDisabled[chat.id._serialized] === true ? 'deaktiviert' : 'aktiviert';
+        message.reply('*Transkription-Bot*:\n' +
+            `- Globale Transkription ist ${globalActive}\n` +
+            `- Transkription für diesen Chat ist ${chatActive}`);
+        return true;
+    }
+    if(command === '!transcription-global=on' || command === '!transcription-global=off') {
+        globalTranscriptionDisabled = command.endsWith('off');
+        const active = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
+        message.reply(`*Transkription-Bot*:\nGlobale Transkription ist ab jetzt ${active}.`);
+        return true;
+    }
+    if(command === '!transcription=on' || command === '!transcription=off') {
+        chatTranscriptionsDisabled[chat.id._serialized] = command.endsWith('off');
+        const active = command.endsWith('off') ? 'deaktiviert' : 'aktiviert';
+        message.reply(`*Transkription-Bot*:\nTranskription in diesem Chat ist ab jetzt ${active}.`);
+        return true;
+    }
+
+    return false;
+}
+
 async function ProcessVoiceMessage(message) {
     const voiceMessage = await getMessageToTranscribe(message);
 
@@ -147,10 +190,20 @@ async function ProcessVoiceMessage(message) {
     const chat = await message.getChat();
     const messageId = voiceMessage.id._serialized;
 
+    // Do not transcribe any chats if transcription got globally disabled.
+    if(globalTranscriptionDisabled) {
+        return;
+    }
+
+    // Do not transcribe individual chats where transcription got disabled.
+    if(chatTranscriptionsDisabled[chat.id._serialized] === true) {
+        return;
+    }
+
     // If it is a voice message, we download it and send it to the api
     const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
     if (!attachmentData) {
-        message.reply("Die Sprachnachricht konnte nicht geladen werden");
+        message.reply('Die Sprachnachricht konnte nicht geladen werden');
         return;
     }
 
