@@ -6,10 +6,12 @@ const languages = {
     de: {
         successHeader: '*Transkript:*\n',
         errorHeader: '*Fehler:* Die Sprachnachricht konnte nicht transkribiert werden.',
+        couldNotDownloadAudio: '*Fehler:* Die Sprachnachricht konnte nicht geladen werden.',
     },
     en: {
         successHeader: '*Transcription:*\n',
         errorHeader: '*Error:* The voice message could not be transcripted.',
+        couldNotDownloadAudio: '*Error:* Couldn\'t download the audio part of the voice message.',
     }
 };
 
