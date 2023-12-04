@@ -124,8 +124,18 @@ async function getMessageToTranscribe(message) {
         return null;
     }
 
-    // Only return a WhatsApp message if media was found.
+    // Only return a WhatsApp message if automatic transcription is enabled and media was found.
     if (env.automaticTranscription && message.hasMedia) {
+        // Do not transcribe any messages if transcription got globally disabled.
+        if (globalTranscriptionDisabled) {
+            return null;
+        }
+        // Do not transcribe individual chat messages where transcription got disabled.
+        const chat = await message.getChat();
+        if (chatTranscriptionsDisabled[chat.id._serialized] === true) {
+            return null;
+        }
+        
         return message;
     }
 
@@ -153,8 +163,8 @@ async function ProcessCommandMessage(message) {
     if (command === '!help') {
         await chat.sendMessage('*Transkription-Bot:*\n' +
             `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
-            `- "!transcription-global=on/off": Transkription global an- oder abschalten.\n` +
-            `- "!transcription=on/off": Transkription für diesen Chat an- oder abschalten.\n` +
+            `- "!transcription-global=on/off": Automatische Transkription global an- oder abschalten.\n` +
+            `- "!transcription=on/off": Automatische Transkription für diesen Chat an- oder abschalten.\n` +
             `- "!status": Aktuellen Status einsehen.\n` +
             `- "!help": Diesen Hilfetext anzeigen.`, {
             quotedMessageId: messageId
@@ -174,7 +184,7 @@ async function ProcessCommandMessage(message) {
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
         globalTranscriptionDisabled = command.endsWith('off');
         const active = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
-        await chat.sendMessage(`*Transkription-Bot:*\nGlobale Transkription ist ab jetzt ${active}.`, {
+        await chat.sendMessage(`*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt ${active}.`, {
             quotedMessageId: messageId
         });
         return true;
@@ -182,7 +192,7 @@ async function ProcessCommandMessage(message) {
     if (command === '!transcription=on' || command === '!transcription=off') {
         chatTranscriptionsDisabled[chat.id._serialized] = command.endsWith('off');
         const active = command.endsWith('off') ? 'deaktiviert' : 'aktiviert';
-        await chat.sendMessage(`*Transkription-Bot:*\nTranskription in diesem Chat ist ab jetzt ${active}.`, {
+        await chat.sendMessage(`*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt ${active}.`, {
             quotedMessageId: messageId
         });
         return true;
@@ -208,16 +218,6 @@ async function ProcessVoiceMessage(message) {
 
     const chat = await message.getChat();
     const messageId = voiceMessage.id._serialized;
-
-    // Do not transcribe any chats if transcription got globally disabled.
-    if (globalTranscriptionDisabled) {
-        return;
-    }
-
-    // Do not transcribe individual chats where transcription got disabled.
-    if (chatTranscriptionsDisabled[chat.id._serialized] === true) {
-        return;
-    }
 
     // If it is a voice message, we download it and send it to the api
     const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
