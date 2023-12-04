@@ -20,8 +20,13 @@ const process = require('node:process');
 
 
 // Transcription command to use when manually triggering transcriptions.
-const transcriptionCommand = getStringEnvVariable(process.env.TRANSCRIPTION_COMMAND, '!tran');
-exports.transcriptionCommand = transcriptionCommand;
+const _transcriptionCommands = getStringEnvVariable(process.env.TRANSCRIPTION_COMMANDS, '!tran').toLowerCase().split(',');
+const transcriptionCommands = _transcriptionCommands.map(result => result.trim()).filter(Boolean);
+exports.transcriptionCommands = transcriptionCommands;
+if (transcriptionCommands.length < 1) {
+    throw new Error('Environment variable TRANSCRIPTION_COMMANDS '
+        + 'needs to be a comma-separated list with at least 1 non-empty value.');
+}
 
 // System language in ISO 639-1 defines which language will be used in WhatsApp for the user-visible text.
 const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, '!tran');
@@ -36,7 +41,7 @@ const automaticTranscription = getBooleanEnvVariable(process.env.AUTOMATIC_TRANS
 exports.automaticTranscription = automaticTranscription;
 console.log(automaticTranscription
     ? 'Automatic transcription for incoming voice messages is enabled.'
-    : `Automatic transcription for incoming voice messages is not enabled. You need to use '${transcriptionCommand}'`);
+    : `Automatic transcription for incoming voice messages is not enabled. You need to use '${transcriptionCommands}'`);
 
 const _speechRecognitionSystem = getStringEnvVariable(process.env.SPEECH_RECOGNITION_SYSTEM, '').toLowerCase();
 let _sanitizedSpeechRecognitionSystem = '';

@@ -129,7 +129,7 @@ async function getMessageToTranscribe(message) {
         return message;
     }
 
-    if (message.body.trim() === env.transcriptionCommand && message.hasQuotedMsg) {
+    if (env.transcriptionCommands.includes(message.body.trim().toLowerCase()) && message.hasQuotedMsg) {
         const quotedMsg = await message.getQuotedMessage();
         if (quotedMsg.hasMedia) {
             return quotedMsg;
@@ -149,6 +149,7 @@ async function ProcessCommandMessage(message) {
     const command = message.body.trim().toLowerCase();
     if (command === '!help') {
         message.reply('*Transkription-Bot:*\n' +
+            `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
             `- "!transcription-global=on/off": Transkription global an- oder abschalten.\n` +
             `- "!transcription=on/off": Transkription für diesen Chat an- oder abschalten.\n` +
             `- "!status": Aktuellen Status einsehen.\n`
