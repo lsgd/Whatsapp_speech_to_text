@@ -44,7 +44,7 @@ async function init() {
         // Generate a date and hour based on the timestamp (just for debugging)
         const [formattedTime, formattedDate] = GetDate(message.timestamp);
         console.log('\x1b[32m%s:\x1b[0m %s %s', contactName, message.type, formattedTime);
-        
+
         //Process message for voice transcription.
         await ProcessVoiceMessage(message);
     });
@@ -61,9 +61,8 @@ async function ContactsWhiteList(Contact) {
 
     if (ContactInfo.isMyContact) {
         return [Contact, true];
-    } else {
-        return [Contact, false];
     }
+    return [Contact, false];
 }
 
 // Date and hour based on the timestamp of the mesage (unix time)
