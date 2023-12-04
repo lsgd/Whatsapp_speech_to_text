@@ -6,8 +6,10 @@ const languages = {
     de: {
         successHeader: '*Transkript:*\n',
         errorHeader: '*Fehler:* Die Sprachnachricht konnte nicht transkribiert werden.',
-    }, en: {
-        successHeader: '*Transcription:*\n', errorHeader: '*Error:* The voice message could not be transcripted.',
+    },
+    en: {
+        successHeader: '*Transcription:*\n',
+        errorHeader: '*Error:* The voice message could not be transcripted.',
     }
 };
 
@@ -17,8 +19,4 @@ if (!languages.hasOwnProperty(selectedLanguage)) {
     selectedLanguage = 'en';
 }
 
-const successHeader = languages[selectedLanguage].successHeader;
-const errorHeader = languages[selectedLanguage].errorHeader;
-
-exports.successHeader = successHeader;
-exports.errorHeader = errorHeader;
+exports.text = languages[selectedLanguage];

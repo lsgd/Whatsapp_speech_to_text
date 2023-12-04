@@ -222,14 +222,14 @@ async function ProcessVoiceMessage(message) {
             const data = JSON.parse(body);
             for (const result of data.results) {
                 const transcript = result.transcript;
-                chat.sendMessage(languages.successHeader + transcript, {
+                chat.sendMessage(languages.text.successHeader + transcript, {
                     quotedMessageId: messageId
                 });
             }
         })
         .catch((err) => {
             console.error(err);
-            chat.sendMessage(languages.errorHeader, {
+            chat.sendMessage(languages.text.errorHeader, {
                 quotedMessageId: messageId
             });
         });
