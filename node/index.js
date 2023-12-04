@@ -20,9 +20,6 @@ const client = new Client({
 });
 
 async function init() {
-    // Initialize client
-    await client.initialize();
-
     // Generates a QR code in the console for authentication.
     client.on('qr', qr => {
         qrcode.generate(qr, {small: true});
@@ -30,7 +27,7 @@ async function init() {
 
     // Log successful client connection
     client.on('ready', () => {
-        console.log('Client is ready!');
+        console.log('WhatsApp client is ready!');
     });
 
     // Reply to me and contacts
@@ -48,6 +45,10 @@ async function init() {
             await ProcessMessage(message);
         }
     });
+
+    // Initialize client
+    console.log('Inititalize Whatsapp client...')
+    await client.initialize();
 }
 
 // Contact white list. If the sender is your contact, the audio file will be transcript
