@@ -27,6 +27,7 @@ if (transcriptionCommands.length < 1) {
     throw new Error('Environment variable TRANSCRIPTION_COMMANDS '
         + 'needs to be a comma-separated list with at least 1 non-empty value.');
 }
+console.log(`Use one of the following commands to manually transcribe voice messages: ${transcriptionCommands.join(', ')}`);
 
 // System language in ISO 639-1 defines which language will be used in WhatsApp for the user-visible text.
 const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, '!tran');
