@@ -42,7 +42,7 @@ async function init() {
             const [formattedTime, formattedDate] = GetDate(message.timestamp);
             console.log('\x1b[32m%s:\x1b[0m %s %s', contact, message.type, formattedTime);
             //Process message for voice transcription.
-            await ProcessMessage(message);
+            await ProcessVoiceMessage(message);
         }
     });
 
@@ -129,7 +129,7 @@ async function getMessageToTranscribe(message) {
     return null;
 }
 
-async function ProcessMessage(message) {
+async function ProcessVoiceMessage(message) {
     const voiceMessage = await getMessageToTranscribe(message);
 
     // The provided message and a possible quoted message weren't of type voice message.
