@@ -155,8 +155,8 @@ async function ProcessCommandMessage(message) {
             `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
             `- "!transcription-global=on/off": Transkription global an- oder abschalten.\n` +
             `- "!transcription=on/off": Transkription für diesen Chat an- oder abschalten.\n` +
-            `- "!status": Aktuellen Status einsehen.\n`
-                `- "!help": Diesen Hilfetext anzeigen.`, {
+            `- "!status": Aktuellen Status einsehen.\n` +
+            `- "!help": Diesen Hilfetext anzeigen.`, {
             quotedMessageId: messageId
         });
         return true;
@@ -165,8 +165,8 @@ async function ProcessCommandMessage(message) {
         const globalActive = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
         const chatActive = chatTranscriptionsDisabled[chat.id._serialized] === true ? 'deaktiviert' : 'aktiviert';
         await chat.sendMessage('*Transkription-Bot:*\n' +
-            `- Globale Transkription ist ${globalActive}\n` +
-            `- Transkription für diesen Chat ist ${chatActive}`, {
+            `- Globale Transkription ist ${globalActive}.\n` +
+            `- Transkription für diesen Chat ist ${chatActive}.`, {
             quotedMessageId: messageId
         });
         return true;
