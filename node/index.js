@@ -161,40 +161,32 @@ async function ProcessCommandMessage(message) {
     const command = message.body.trim().toLowerCase();
     const messageId = message.id._serialized;
     if (command === '!help') {
-        await chat.sendMessage('*Transkription-Bot:*\n' +
+        await message.reply('*Transkription-Bot:*\n' +
             `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
             `- "!transcription-global=on/off": Automatische Transkription global an- oder abschalten.\n` +
             `- "!transcription=on/off": Automatische Transkription für diesen Chat an- oder abschalten.\n` +
             `- "!status": Aktuellen Status einsehen.\n` +
-            `- "!help": Diesen Hilfetext anzeigen.`, {
-            quotedMessageId: messageId
-        });
+            `- "!help": Diesen Hilfetext anzeigen.`);
         return true;
     }
     if (command === '!status') {
         const globalActive = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
         const chatActive = chatTranscriptionsDisabled[chat.id._serialized] === true ? 'deaktiviert' : 'aktiviert';
-        await chat.sendMessage('*Transkription-Bot:*\n' +
+        await message.reply('*Transkription-Bot:*\n' +
             `- Globale Transkription ist ${globalActive}.\n` +
-            `- Transkription für diesen Chat ist ${chatActive}.`, {
-            quotedMessageId: messageId
-        });
+            `- Transkription für diesen Chat ist ${chatActive}.`);
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
         globalTranscriptionDisabled = command.endsWith('off');
         const active = globalTranscriptionDisabled ? 'deaktiviert' : 'aktiviert';
-        await chat.sendMessage(`*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt ${active}.`, {
-            quotedMessageId: messageId
-        });
+        await message.reply(`*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt ${active}.`);
         return true;
     }
     if (command === '!transcription=on' || command === '!transcription=off') {
         chatTranscriptionsDisabled[chat.id._serialized] = command.endsWith('off');
         const active = command.endsWith('off') ? 'deaktiviert' : 'aktiviert';
-        await chat.sendMessage(`*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt ${active}.`, {
-            quotedMessageId: messageId
-        });
+        await message.reply(`*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt ${active}.`);
         return true;
     }
 
@@ -243,16 +235,12 @@ async function ProcessVoiceMessage(message) {
             const data = JSON.parse(body);
             for (const result of data.results) {
                 const transcript = result.transcript;
-                chat.sendMessage(languages.text.successHeader + transcript, {
-                    quotedMessageId: messageId
-                });
+                voiceMessage.reply(languages.text.successHeader + transcript);
             }
         })
         .catch((err) => {
             console.error(err);
-            chat.sendMessage(languages.text.errorHeader, {
-                quotedMessageId: messageId
-            });
+            voiceMessage.reply(languages.text.errorHeader);
         });
 }
 
