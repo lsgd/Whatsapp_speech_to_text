@@ -289,7 +289,7 @@ Send *!help* to display this message`);
 		case '!status':
 			break;
 		case '!help':
-                sendMessage(message.from, 'are you ok?');
+                	client.sendMessage(message.from, 'are you ok?');
         }
     }
 }
