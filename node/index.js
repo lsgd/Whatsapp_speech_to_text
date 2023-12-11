@@ -67,7 +67,7 @@ async function init() {
 async function getContactInfo(message) {
     // .author is only set in group chats.
     // In user-to-user chats the .from property contains the contact ID.
-    let contactID = ('author' in message) ? message.author : message.from;
+    let contactID = (message.author) ? message.author : message.from;
     let contact = await client.getContactById(contactID);
 
     return [contact.name, contact.isMyContact];
