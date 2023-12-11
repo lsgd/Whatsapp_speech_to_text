@@ -7,6 +7,23 @@ const languages = {
         successHeader: '*Transkript:*\n',
         errorHeader: '*Fehler:* Die Sprachnachricht konnte nicht transkribiert werden.',
         couldNotDownloadAudio: '*Fehler:* Die Sprachnachricht konnte nicht geladen werden.',
+        commands: {
+            enabled: 'aktiviert',
+            disabled: 'deaktiviert',
+            help: '*Transkription-Bot:*\n' +
+                `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
+                `- "!transcription-global=on/off": Automatische Transkription global an- oder abschalten.\n` +
+                `- "!transcription=on/off": Automatische Transkription für diesen Chat an- oder abschalten.\n` +
+                `- "!status": Aktuellen Status einsehen.\n` +
+                `- "!help": Diesen Hilfetext anzeigen.`,
+            status: '*Transkription-Bot:*\n' +
+                '- Globale Transkription ist {globalStatus}.\n' +
+                '- Transkription für diesen Chat ist {chatStatus}.',
+            globalTranscription: '*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt {status}.',
+            chatTranscription: '*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt {status}.',
+
+
+        },
     },
     en: {
         successHeader: '*Transcription:*\n',
