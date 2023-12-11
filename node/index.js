@@ -161,7 +161,6 @@ async function ProcessCommandMessage(message) {
     }
 
     const chat = await message.getChat();
-    const messageId = message.id._serialized;
     if (command === '!help') {
         await message.reply('*Transkription-Bot:*\n' +
             `- Verwende "${env.transcriptionCommands.join('" oder "')}" um eine Sprachnachricht zu transkribieren.\n` +
