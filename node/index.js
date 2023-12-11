@@ -150,15 +150,17 @@ async function getMessageToTranscribe(message) {
 }
 
 async function ProcessCommandMessage(message) {
+    const command = message.body.trim().toLowerCase();
     if (!message.fromMe) {
         // Only we are allowed to send commands to the bot!
-        let [contactName, trustedContact] = await ContactsWhiteList(message.from);
-        console.log(`User "${contactName}" tried to use the bot commands.`);
+        if(command.startsWith('!') && command.length > 1) {
+            let [contactName, trustedContact] = await ContactsWhiteList(message.from);
+            console.log(`User "${contactName}" tried to use the bot commands.`);
+        }
         return;
     }
 
     const chat = await message.getChat();
-    const command = message.body.trim().toLowerCase();
     const messageId = message.id._serialized;
     if (command === '!help') {
         await message.reply('*Transkription-Bot:*\n' +
