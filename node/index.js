@@ -151,12 +151,15 @@ async function getMessageToTranscribe(message) {
 
 async function ProcessCommandMessage(message) {
     const command = message.body.trim().toLowerCase();
+    if (!command.startsWith('!') || command.length <= 1) {
+        // Not a command.
+        return;
+    }
+
     if (!message.fromMe) {
         // Only we are allowed to send commands to the bot!
-        if (command.startsWith('!') && command.length > 1) {
-            let [contactName, trustedContact] = await getContactInfo(message);
-            console.log(`User "${contactName}" tried to use the bot commands.`);
-        }
+        let [contactName, trustedContact] = await getContactInfo(message);
+        console.log(`User "${contactName}" tried to use the bot commands.`);
         return;
     }
 
@@ -184,7 +187,7 @@ async function ProcessCommandMessage(message) {
         return true;
     }
 
-    if (command.startsWith('!') && command.length > 1 && !env.transcriptionCommands.includes(command)) {
+    if (!env.transcriptionCommands.includes(command)) {
         console.log(`You sent an unknown command "${command}".`);
     }
 
