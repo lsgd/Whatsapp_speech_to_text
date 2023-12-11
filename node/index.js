@@ -35,11 +35,12 @@ async function init() {
 
     // Reply to me and contacts
     client.on('message_create', async message => {
-        let [contactName, trustedContact] = await ContactsWhiteList(message.from);
+        let [contactName, trustedContact] = await getContactInfo(message);
         if (message.fromMe) {
+            // Always trust messages sent by me. I am quite trustworthy :-D
             trustedContact = true;
         }
-        // Do not process the message if sender is not a trusted contact (in adress book or myself).
+        // Do not process the message if sender is not a trusted contact (in address book or myself).
         if (!trustedContact) {
             return;
         }
@@ -62,15 +63,14 @@ async function init() {
     await client.initialize();
 }
 
-// Contact white list. If the sender is your contact, the audio file will be transcript
-async function ContactsWhiteList(Contact) {
-    let ContactInfo = await client.getContactById(Contact);
-    Contact = ContactInfo.name
+// Return the name of the sender and if the sender is in my address book (= trusted contact).
+async function getContactInfo(message) {
+    // .author is only set in group chats.
+    // In user-to-user chats the .from property contains the contact ID.
+    let contactID = ('author' in message) ? message.author : message.from;
+    let contact = await client.getContactById(contactID);
 
-    if (ContactInfo.isMyContact) {
-        return [Contact, true];
-    }
-    return [Contact, false];
+    return [contact.name, contact.isMyContact];
 }
 
 // Date and hour based on the timestamp of the mesage (unix time)
@@ -154,7 +154,7 @@ async function ProcessCommandMessage(message) {
     if (!message.fromMe) {
         // Only we are allowed to send commands to the bot!
         if(command.startsWith('!') && command.length > 1) {
-            let [contactName, trustedContact] = await ContactsWhiteList(message.from);
+            let [contactName, trustedContact] = await getContactInfo(message);
             console.log(`User "${contactName}" tried to use the bot commands.`);
         }
         return;
