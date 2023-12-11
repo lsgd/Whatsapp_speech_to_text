@@ -50,7 +50,7 @@ async function init() {
         console.log('\x1b[32m%s:\x1b[0m %s - %s %s', contactName, message.type, formattedDate, formattedTime);
 
         if (await ProcessCommandMessage(message)) {
-            // Do not continue to process the message;
+            // Do not continue to process the message.
             return;
         }
 
