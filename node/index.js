@@ -157,6 +157,11 @@ async function ProcessCommandMessage(message) {
     }
 
     if (!message.fromMe) {
+        if (command === '!help') {
+            await message.reply(languages.text.commands.help_unauthorized);
+            return true;
+        }
+
         // Only we are allowed to send commands to the bot!
         let [contactName, trustedContact] = await getContactInfo(message);
         console.log(`User "${contactName}" tried to use the bot commands.`);
