@@ -17,7 +17,7 @@ services:
       OPENAI_API_KEY: 'my-private-key'
       # OpenAI supports translating certain languages to English (and only English)
       OPENAI_TRANSLATE_TO_ENGLISH: true
-      # OpenAI will not translate voice messages of the list of comma-separated languages.
+      # If translation to English is enabled, OpenAI will not translate voice messages of the following comma-separated languages.
       # It's unclear which naming scheme is used for the languages!
       # Details on https://platform.openai.com/docs/guides/speech-to-text/supported-languages
       OPENAI_EXCLUDED_TRANSLATION_LANGUAGES: 'english,german'
