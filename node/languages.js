@@ -35,15 +35,15 @@ const languages = {
             enabled: 'enabled',
             disabled: 'disabled',
             help: '*Transcription-Bot:*\n' +
-                `- Antworte auf eine Sprachnachricht mit "${env.transcriptionCommands.join('" oder "')}" um diese zu transkribieren.\n` +
-                `- "!transcription-global=on/off": Automatische Transkription global an- oder abschalten.\n` +
-                `- "!transcription=on/off": Automatische Transkription für diesen Chat an- oder abschalten.\n` +
-                `- "!status": Aktuellen Status einsehen.\n` +
-                `- "!help": Diesen Hilfetext anzeigen.`,
+                `- Respond to a voice message with "${env.transcriptionCommands.join('" or "')}" to trigger transcription.\n` +
+                `- "!transcription-global=on/off": Enable / disable automatic transcription globally.\n` +
+                `- "!transcription=on/off": Enable / disable automatic transcription within the current chat.\n` +
+                `- "!status": Show current status.\n` +
+                `- "!help": Show this help text.`,
             help_unauthorized: '*Transcription-Bot:*\n' +
-                'Alles in Ordnung?\nNur ein Witz..., aber du bist nicht authorisiert um weitreichende Änderungen vorzunehmen.\n'
-                `Antworte auf eine Sprachnachricht mit "${env.transcriptionCommands.join('" oder "')}" um diese zu transkribieren.`
-                `Gib "!help" ein, um diesen Hilfetext anzeigen.`,
+                'Are you okay?\nJust joking..., but you are not authorized to run any commands of this bot.\n'
+                `However, you can respond to a voice message with "${env.transcriptionCommands.join('" or "')}" to trigger transcription.`
+                `Send "!help" to see this text again.`,
             status: '*Transcription-Bot:*\n' +
                 '- Global transcription is {globalStatus}.\n' +
                 '- Transcription within this chat is {chatStatus}.',
