@@ -158,7 +158,7 @@ async function ProcessCommandMessage(message) {
 
     if (!message.fromMe) {
         if (command === '!help') {
-            await message.reply(languages.text.commands.help_unauthorized);
+            await message.reply(languages.text.commands.helpUnauthorized);
             return true;
         }
 
