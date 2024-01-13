@@ -1,12 +1,12 @@
 version: '3.5'
 
 services:
-  speech_to_text_whisper_api:
+  speech_to_text_openai_whisper_api:
     build:
-      context: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:api
+      context: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:openai-whisper
       args:
         MODEL_VERSION: 'tiny'
-    container_name: 'speech_to_text_whisper_api'
+    container_name: 'speech_to_text_openai_whisper_api'
     environment:
       MODEL_VERSION: 'tiny'
     networks:
@@ -28,7 +28,7 @@ services:
       # Use Whisper as the speech recognition system.
       SPEECH_RECOGNITION_SYSTEM: 'whisper'
       # URL to the API of our Whisper container.
-      WHISPER_API_ADDRESS: 'http://speech_to_text_whisper_api:5000'
+      WHISPER_API_ADDRESS: 'http://speech_to_text_openai_whisper_api:5000'
     networks:
       whatsapp_network:
         ipv4_address: ${IPV4_NETWORK:-172.68}.2.2
