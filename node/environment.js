@@ -30,7 +30,8 @@ if (transcriptionCommands.length < 1) {
 console.log(`Use one of the following commands to manually transcribe voice messages: ${transcriptionCommands.join(', ')}`);
 
 // System language in ISO 639-1 defines which language will be used in WhatsApp for the user-visible text.
-const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, '!tran');
+// Check the languages.js file for available languages.
+const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, 'en');
 exports.systemLanguage = systemLanguage;
 
 // chromeDataPath is the path where the Google Chrome session will be stored.
