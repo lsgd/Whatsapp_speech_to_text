@@ -1,0 +1,44 @@
+version: '3.5'
+
+services:
+  speech_to_text_faster_whisper_api:
+    build:
+      context: https://github.com/emdioh/Whatsapp_speech_to_text.git#faster_whisper:faster-whisper
+      args:
+        MODEL_SIZE: 'small'
+        DEBUG: 1
+    container_name: 'speech_to_text_faster_whisper_api'
+    environment:
+      MODEL_SIZE: 'small'
+      DEBUG: 1
+    networks:
+      whatsapp_network:
+        ipv4_address: ${IPV4_NETWORK:-172.68}.2.1
+
+  speech_to_text_node:
+    build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
+    container_name: 'speech_to_text_node'
+    volumes:
+      - './node/data:/app/data:rw'
+    depends_on:
+      - speech_to_text_whisper_api
+    environment:
+      # Location of the WhatsApp-web chrome session. Matches the volume path from above.
+      CHROME_DATA_PATH: '/app/data/'
+      # Transcribe incoming voice messages automatically.
+      AUTOMATIC_TRANSCRIPTION: true
+      # Use Whisper as the speech recognition system.
+      SPEECH_RECOGNITION_SYSTEM: 'whisper'
+      # URL to the API of our Whisper container.
+      WHISPER_API_ADDRESS: 'http://speech_to_text_faster_whisper_api:5000'
+    networks:
+      whatsapp_network:
+        ipv4_address: ${IPV4_NETWORK:-172.68}.2.2
+
+networks:
+  whatsapp_network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.68.0.0/16
