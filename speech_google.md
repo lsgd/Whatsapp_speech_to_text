@@ -78,7 +78,8 @@ Go to https://cloud.google.com/billing/docs/how-to/budgets and follow the instru
 Since the costs for this project should be very low, a recommended alert threshold is USD $10.
 
 **Note**
-:warning: Setting up a budget alert is strongly recommended. An alert could unveil that your setup is malfunctioning, is getting
+:warning: Setting up a budget alert is strongly recommended. An alert could unveil that your setup is malfunctioning, is
+getting
 heavily abused or your service account's credentials are compromised. In any case, you should start investigating!
 
 ## 3. Configure our node service
@@ -90,8 +91,8 @@ API.
 
 1. `SPEECH_RECOGNITION_SYSTEM = 'google'` to tell the node service to use the Google backends.
 2. `GOOGLE_CLOUD_PROJECT_ID = 'project-id'` is your Google Cloud project ID.
-3. `GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE = './path/to/the/service-account/credentials.json'` contains the path to the
-   JSON key of our service account.
+3. `GOOGLE_CLOUD_SERVICE_ACCOUNT_CREDENTIALS_FILE = './path/to/the/service-account/credentials.json'` contains the path
+   to the JSON key of our service account.
 4. `GOOGLE_CLOUD_STORAGE_BUCKET = 'name-of-your-bucket'` points to the created Google Cloud Storage bucket.
 5. `GOOGLE_CLOUD_SPEECH_LANGUAGE = 'de-CH'` should point to the BCP-47 language code of the most-spoken language of your
    voice messages.
@@ -100,3 +101,7 @@ API.
     - Provide a single alternative language: `'de-CH'`
     - Do not add a trailing comma! Bad: `'de-CH,en-US,'`, Good: `'de-CH,en-US'`
     - If you do not provide any alternatives, simply omit this environment variable or provide an empty value `''`.
+
+## 4. Example docker compose configuration
+
+An example configuration can be found in [docker-compose.google.yml](./docker-compose.google.yml).
