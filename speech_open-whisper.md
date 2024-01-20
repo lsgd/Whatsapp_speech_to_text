@@ -3,8 +3,8 @@
 ## 1. Workflow
 
 1. Download the voice audio from WhatsApp
-2. Upload the voice audio to Google Cloud Storage
-3. Call the Speech-to-Text API pointing to the audio file in Google Cloud Storage
+2. Send the voice audio to the local API running on the Whisper service
+3. Parse the returned transcription
 
 ## 2. Configure our Whisper service
 
@@ -44,8 +44,8 @@ Check the official docker compose documentation for more details at https://docs
 
 ### Environment variables
 
-You need to pass the following environment variables in order to run our node service with the Google Speech-to-Text
-API.
+You need to pass the following additional environment variables in order to run our node service with the local Whisper
+model:
 
 1. `SPEECH_RECOGNITION_SYSTEM = 'whisper'` to tell the node service to use the local API with Whisper as backends.
 2. `WHISPER_API_ADDRESS` points to the HTTP endpoint of your Whisper container.
