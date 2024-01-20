@@ -1,4 +1,9 @@
-# Using Open-Whisper locally
+# Using Faster-Whisper locally
+
+> faster-whisper is a reimplementation of OpenAI's Whisper model using CTranslate2, which is a fast inference engine for
+Transformer models.
+
+_(Source: https://pypi.org/project/faster-whisper/)_
 
 ## 1. Workflow
 
@@ -20,8 +25,8 @@ As of 2024-01-20, the possible values are: `tiny`, `base`, `small`, `medium` and
 
 You need to set the model version __twice__ in the compose file:
 
-1. Set it in `build > args > MODEL_VERSION`
-2. Set it in `environment > MODEL_VERSION`
+1. Set it in `build > args > MODEL_SIZE`
+2. Set it in `environment > MODEL_SIZE`
 
 ### Use a GPU
 
@@ -44,7 +49,8 @@ Check the official docker compose documentation for more details at https://docs
 
 ### Environment variables
 
-You need to pass the following additional environment variables in order to run our node service with the local Whisper
+You need to pass the following additional environment variables in order to run our node service with the local
+FasterWhisper
 model:
 
 1. `SPEECH_RECOGNITION_SYSTEM = 'whisper'` to tell the node service to use the local API with Whisper as backend.
@@ -54,4 +60,4 @@ model:
 
 ## 4. Example docker compose configuration
 
-An example configuration can be found in [docker-compose.openai-whisper.yml](./docker-compose.openai-whisper.yml).
+An example configuration can be found in [docker-compose.faster-whisper.yml](./docker-compose.faster-whisper.yml).
