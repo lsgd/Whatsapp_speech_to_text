@@ -42,7 +42,7 @@ _(Source: https://platform.openai.com/docs/guides/speech-to-text/longer-inputs)_
 Our current implementation __does not split larger files__ into 25MB chunks!  
 Larger voice messages than 25MB are therefore currently not supported out-of-the-box.
 
-## 3. Setup an API key
+## 4. Setup an API key
 
 In order to use the online API of OpenAI, you need to create an account at https://platform.openai.com, setup billing
 properly and top-up your account with some money.
@@ -50,7 +50,7 @@ properly and top-up your account with some money.
 Once you have your account ready, go to https://platform.openai.com/api-keys and follow the instructions to create a new
 API key.
 
-## 4. Environment variables
+## 5. Environment variables
 
 You need to pass the following additional environment variables in order to run our node service with the OpenAI online
 Whisper API.
@@ -66,6 +66,6 @@ Whisper API.
     - It's unclear which naming scheme is used for the languages! Details
       on https://platform.openai.com/docs/guides/speech-to-text/supported-languages
 
-## 5. Example docker compose configuration
+## 6. Example docker compose configuration
 
 An example configuration can be found in [docker-compose.openai-online-api.yml](./docker-compose.openai-online-api.yml).
