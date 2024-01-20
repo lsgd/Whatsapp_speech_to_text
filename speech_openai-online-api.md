@@ -1,8 +1,7 @@
 # Using OpenAI Whisper online API
 
 OpenAI offers a [Transcription API](https://platform.openai.com/docs/api-reference/audio/createTranscription) that can
-be used to transcribe audio files
-to text.
+be used to transcribe audio files to text.
 
 ## 1. Workflow
 
