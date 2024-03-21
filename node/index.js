@@ -62,12 +62,14 @@ async function init() {
 
     client.on('message_revoke_everyone', async message => {
         if (!message) {
+            console.log('message_revoke_everyone: Invalid message');
             return null;
         }
         const messageId = message.id._serialized;
 
         if (!(messageId in transcribedMessages)) {
             // Unrelated message got deleted.
+            console.log('message_revoke_everyone: Unrelated message got deleted');
             return null;
         }
 
@@ -77,11 +79,11 @@ async function init() {
         for (let i = 0; i < messagesArray.length; i++) {
             if (messagesArray[i].id._serialized === responseMessage.messageId) {
                 await messagesArray[i].delete(true);
-                break;
+                console.log(`message_revoke_everyone: Message #${responseMessage.messageId} deleted`);
+                return;
             }
         }
-
-
+        console.log(`message_revoke_everyone: Message with ID ${responseMessage.messageId} not found`);
     });
 
     // Initialize client
