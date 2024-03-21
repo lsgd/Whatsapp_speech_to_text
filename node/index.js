@@ -21,6 +21,8 @@ const client = new Client({
 
 let chatTranscriptionsDisabled = {};
 let globalTranscriptionDisabled = false;
+// Key = Voice Message ID, Value = Response from bot.
+let transcribedMessages = {};
 
 async function init() {
     // Generates a QR code in the console for authentication.
@@ -56,6 +58,30 @@ async function init() {
 
         // Process message for voice transcription.
         await ProcessVoiceMessage(message);
+    });
+
+    client.on('message_revoke_everyone', async message => {
+        if (!message) {
+            return null;
+        }
+        const messageId = message.id._serialized;
+
+        if (!(messageId in transcribedMessages)) {
+            // Unrelated message got deleted.
+            return null;
+        }
+
+        const responseMessage = transcribedMessages[messageId];
+        const chat = await client.getChatById(responseMessage.chatId);
+        const messagesArray = await chat.fetchMessages({limit: 30, fromMe: true});
+        for (let i = 0; i < messagesArray.length; i++) {
+            if (messagesArray[i].id._serialized === responseMessage.messageId) {
+                await messagesArray[i].delete(true);
+                break;
+            }
+        }
+
+
     });
 
     // Initialize client
@@ -233,11 +259,15 @@ async function ProcessVoiceMessage(message) {
         callback = speechWhisper.transcribe;
     }
     callback(binaryVoiceBuffer, messageId, message)
-        .then((body) => {
+        .then(async (body) => {
             const data = JSON.parse(body);
             for (const result of data.results) {
                 const transcript = result.transcript;
-                voiceMessage.reply(languages.text.successHeader + transcript);
+                let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
+                transcribedMessages[messageId] = {
+                    messageId: responseMessage.id._serialized,
+                    chatId: chat.id._serialized,
+                };
             }
         })
         .catch((err) => {
