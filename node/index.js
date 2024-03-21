@@ -62,6 +62,12 @@ async function init() {
 
     client.on('message_revoke_everyone', async (message, revoked_msg) => {
         await deleteRevokedVoiceMessageTranscription(message);
+        if(!revoked_msg) {
+            return;
+        }
+        if(revoked_msg.id._serialized === message.id._serialized) {
+            return;
+        }
         await deleteRevokedVoiceMessageTranscription(revoked_msg);
     });
 
@@ -97,6 +103,10 @@ function GetDate(timestamp) {
     return [formattedTime, formattedDate];
 }
 
+function getTimestampId(message) {
+    return message.id.fromMe.toString() + '_' + message.id.remote + '_' + message.timestamp.toString();
+}
+
 async function deleteRevokedVoiceMessageTranscription(message) {
     console.log('Transcribed messages:')
     for(let voiceMessageId in transcribedMessages) {
@@ -107,7 +117,7 @@ async function deleteRevokedVoiceMessageTranscription(message) {
         console.log(`message_revoke_everyone: Invalid message.`);
         return null;
     }
-    const messageId = message.id._serialized;
+    const messageId = getTimestampId(message);
     console.log(`Deleted message ID: ${messageId}`);
 
     if (!(messageId in transcribedMessages)) {
@@ -277,7 +287,7 @@ async function ProcessVoiceMessage(message) {
             for (const result of data.results) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                transcribedMessages[voiceMessage.id._serialized] = {
+                transcribedMessages[getTimestampId(voiceMessage)] = {
                     messageId: responseMessage.id._serialized,
                     chatId: chat.id._serialized,
                 };
