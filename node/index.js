@@ -60,30 +60,9 @@ async function init() {
         await ProcessVoiceMessage(message);
     });
 
-    client.on('message_revoke_everyone', async message => {
-        if (!message) {
-            console.log('message_revoke_everyone: Invalid message');
-            return null;
-        }
-        const messageId = message.id._serialized;
-
-        if (!(messageId in transcribedMessages)) {
-            // Unrelated message got deleted.
-            console.log('message_revoke_everyone: Unrelated message got deleted');
-            return null;
-        }
-
-        const responseMessage = transcribedMessages[messageId];
-        const chat = await client.getChatById(responseMessage.chatId);
-        const messagesArray = await chat.fetchMessages({limit: 30, fromMe: true});
-        for (let i = 0; i < messagesArray.length; i++) {
-            if (messagesArray[i].id._serialized === responseMessage.messageId) {
-                await messagesArray[i].delete(true);
-                console.log(`message_revoke_everyone: Message #${responseMessage.messageId} deleted`);
-                return;
-            }
-        }
-        console.log(`message_revoke_everyone: Message with ID ${responseMessage.messageId} not found`);
+    client.on('message_revoke_everyone', async (message, revoked_msg) => {
+        await deleteRevokedVoiceMessageTranscription(message);
+        await deleteRevokedVoiceMessageTranscription(revoked_msg);
     });
 
     // Initialize client
@@ -116,6 +95,32 @@ function GetDate(timestamp) {
     const formattedTime = `${hours}:${minutes}:${seconds}`;
 
     return [formattedTime, formattedDate];
+}
+
+async function deleteRevokedVoiceMessageTranscription(message) {
+    if (!message) {
+        console.log(`message_revoke_everyone: Invalid message. transcribedMessages = ${transcribedMessages}`);
+        return null;
+    }
+    const messageId = message.id._serialized;
+
+    if (!(messageId in transcribedMessages)) {
+        // Unrelated message got deleted.
+        console.log(`message_revoke_everyone: Unrelated message with ID ${messageId} got deleted. transcribedMessages = ${transcribedMessages}`);
+        return null;
+    }
+
+    const responseMessage = transcribedMessages[messageId];
+    const chat = await client.getChatById(responseMessage.chatId);
+    const messagesArray = await chat.fetchMessages({limit: 30, fromMe: true});
+    for (let i = 0; i < messagesArray.length; i++) {
+        if (messagesArray[i].id._serialized === responseMessage.messageId) {
+            await messagesArray[i].delete(true);
+            console.log(`message_revoke_everyone: Message #${responseMessage.messageId} deleted. transcribedMessages = ${transcribedMessages}`);
+            return;
+        }
+    }
+    console.log(`message_revoke_everyone: Message with ID ${responseMessage.messageId} not found. transcribedMessages = ${transcribedMessages}`);
 }
 
 // This function handles the missing media in the chat by retrieving messages from the chat until the media is available
