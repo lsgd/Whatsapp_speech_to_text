@@ -98,11 +98,17 @@ function GetDate(timestamp) {
 }
 
 async function deleteRevokedVoiceMessageTranscription(message) {
+    console.log('Transcribed messages:')
+    for(let voiceMessageId in transcribedMessages) {
+        console.log(`\t${voiceMessageId} => ${transcribedMessages[voiceMessageId].messageId}`);
+    }
+
     if (!message) {
-        console.log(`message_revoke_everyone: Invalid message. transcribedMessages = ${transcribedMessages}`);
+        console.log(`message_revoke_everyone: Invalid message.`);
         return null;
     }
     const messageId = message.id._serialized;
+    console.log(`Deleted message ID: ${messageId}`);
 
     if (!(messageId in transcribedMessages)) {
         // Unrelated message got deleted.
