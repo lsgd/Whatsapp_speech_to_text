@@ -107,22 +107,16 @@ function getTimestampId(message) {
     return message.id.fromMe.toString() + '_' + message.id.remote + '_' + message.timestamp.toString();
 }
 
+// Checks the past 30 messages you or the bot send in a chat and deletes the related transcription to
+// the deleted voice message.
 async function deleteRevokedVoiceMessageTranscription(message) {
-    console.log('Transcribed messages:')
-    for(let voiceMessageId in transcribedMessages) {
-        console.log(`\t${voiceMessageId} => ${transcribedMessages[voiceMessageId].messageId}`);
-    }
-
     if (!message) {
-        console.log(`message_revoke_everyone: Invalid message.`);
         return null;
     }
     const messageId = getTimestampId(message);
-    console.log(`Deleted message ID: ${messageId}`);
 
     if (!(messageId in transcribedMessages)) {
         // Unrelated message got deleted.
-        console.log(`message_revoke_everyone: Unrelated message with ID ${messageId} got deleted. transcribedMessages = ${transcribedMessages}`);
         return null;
     }
 
@@ -132,11 +126,9 @@ async function deleteRevokedVoiceMessageTranscription(message) {
     for (let i = 0; i < messagesArray.length; i++) {
         if (messagesArray[i].id._serialized === responseMessage.messageId) {
             await messagesArray[i].delete(true);
-            console.log(`message_revoke_everyone: Message #${responseMessage.messageId} deleted. transcribedMessages = ${transcribedMessages}`);
             return;
         }
     }
-    console.log(`message_revoke_everyone: Message with ID ${responseMessage.messageId} not found. transcribedMessages = ${transcribedMessages}`);
 }
 
 // This function handles the missing media in the chat by retrieving messages from the chat until the media is available
