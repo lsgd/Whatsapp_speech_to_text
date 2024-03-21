@@ -277,7 +277,7 @@ async function ProcessVoiceMessage(message) {
             for (const result of data.results) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                transcribedMessages[messageId] = {
+                transcribedMessages[voiceMessage.id._serialized] = {
                     messageId: responseMessage.id._serialized,
                     chatId: chat.id._serialized,
                 };
