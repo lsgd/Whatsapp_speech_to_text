@@ -217,7 +217,7 @@ async function ProcessCommandMessage(message) {
     if (command === '!status') {
         const globalStatus = globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
         const chatStatus = chatTranscriptionsDisabled[chat.id._serialized] === true ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.replace('{globalStatus}', globalStatus).replace('{chatStatus}', chatStatus));
+        await message.reply(languages.text.commands.status.replace('{globalStatus}', globalStatus).replace('{chatStatus}', chatStatus));
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
