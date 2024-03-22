@@ -72,7 +72,7 @@ async function init() {
     });
 
     // Initialize client
-    console.log('Inititalize Whatsapp client...')
+    console.log('Initialize Whatsapp client...')
     await client.initialize();
 }
 
