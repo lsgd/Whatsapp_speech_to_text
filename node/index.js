@@ -9,6 +9,7 @@ const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
+const { state } = require('./state');
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
@@ -19,14 +20,16 @@ const client = new Client({
     }
 });
 
-let chatTranscriptionsDisabled = {};
-let globalTranscriptionDisabled = false;
-// Key = Voice Message ID, Value = Response from bot.
-let transcribedMessages = {};
-let transcribedMessagesIds = [];
-const transcribedMessagesCacheSize = 100;
 
 async function init() {
+  
+    await state.init();
+
+    if (!env.freshStateOnStart){
+      console.log("Loading state on start.");
+      await state.load();
+    }
+
     // Generates a QR code in the console for authentication.
     client.on('qr', qr => {
         qrcode.generate(qr, {small: true});
@@ -117,12 +120,12 @@ async function deleteRevokedVoiceMessageTranscription(message) {
     }
     const messageId = getTimestampId(message);
 
-    if (!(messageId in transcribedMessages)) {
+    if (!state.hasMessage(messageId)) {
         // Unrelated message got deleted.
         return null;
     }
 
-    const responseMessage = transcribedMessages[messageId];
+    const responseMessage = state.getMessage(messageId);
     const chat = await client.getChatById(responseMessage.chatId);
     const messagesArray = await chat.fetchMessages({limit: 30, fromMe: true});
     for (let i = 0; i < messagesArray.length; i++) {
@@ -170,12 +173,13 @@ async function getMessageToTranscribe(message) {
     // Only return a WhatsApp message if automatic transcription is enabled and media was found.
     if (env.automaticTranscription && message.hasMedia) {
         // Do not transcribe any messages if transcription got globally disabled.
-        if (globalTranscriptionDisabled) {
+        if (state.globalTranscriptionDisabled) {
             return null;
         }
         // Do not transcribe individual chat messages where transcription got disabled.
         const chat = await message.getChat();
-        if (chatTranscriptionsDisabled[chat.id._serialized] === true) {
+
+        if (state.isChatTranscriptionDisabled()){
             return null;
         }
 
@@ -217,19 +221,24 @@ async function ProcessCommandMessage(message) {
         return true;
     }
     if (command === '!status') {
-        const globalStatus = globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
-        const chatStatus = chatTranscriptionsDisabled[chat.id._serialized] === true ? languages.text.commands.disabled : languages.text.commands.enabled;
+        const globalStatus = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
+        const chatStatus = state.isChatTranscriptionDisabled(chat.id._serialized) ? languages.text.commands.disabled : languages.text.commands.enabled;
         await message.reply(languages.text.commands.status.replace('{globalStatus}', globalStatus).replace('{chatStatus}', chatStatus));
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
-        globalTranscriptionDisabled = command.endsWith('off');
-        const status = globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
+        state.globalTranscriptionDisabled = command.endsWith('off');
+        const status = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
         await message.reply(languages.text.commands.globalTranscription.replace('{status}', status));
         return true;
     }
     if (command === '!transcription=on' || command === '!transcription=off') {
-        chatTranscriptionsDisabled[chat.id._serialized] = command.endsWith('off');
+        let id = chat.id._serialized;
+        if (command.endsWith('off')){
+          state.disableChatTranscription(id);
+        }else{
+          state.enableChatTranscription(id);
+        };
         const status = command.endsWith('off') ? languages.text.commands.disabled : languages.text.commands.enabled;
         await message.reply(languages.text.commands.chatTranscription.replace('{status}', status));
         return true;
@@ -282,16 +291,10 @@ async function ProcessVoiceMessage(message) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
                 let id = getTimestampId(voiceMessage);
-                transcribedMessages[id] = {
+                state.trackMessage(id, {
                     messageId: responseMessage.id._serialized,
                     chatId: chat.id._serialized,
-                };
-                transcribedMessagesIds.push(id);
-                if (transcribedMessagesIds.length > transcribedMessagesCacheSize) {
-                  let toRemove = transcribedMessagesIds.shift();
-                  delete transcribedMessages[toRemove];
-                }
-
+                });
             }
         })
         .catch((err) => {

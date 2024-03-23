@@ -119,4 +119,7 @@ switch (_speechRecognitionSystem) {
 }
 const speechRecognitionSystem = _sanitizedSpeechRecognitionSystem;
 exports.speechRecognitionSystem = speechRecognitionSystem;
+
+const _saveStateFile = getStringEnvVariable(process.env.SAVE_STATE_FILE, 'state.json');
+exports._saveStateFile = _saveStateFile;
 console.log('Used speech recognition system:', speechRecognitionSystem);
