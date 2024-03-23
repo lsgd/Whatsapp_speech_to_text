@@ -1,4 +1,0 @@
-services:
-  speech_to_text_node:
-    build: 
-      context: ./node
