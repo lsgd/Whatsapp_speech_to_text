@@ -23,7 +23,7 @@ services:
       OPENAI_EXCLUDED_TRANSLATION_LANGUAGES: 'english,german'
     networks:
       whatsapp_network:
-        ipv4_address: ${IPV4_NETWORK:-172.68}.2.2
+        ipv4_address: ${IPV4_NETWORK:-172.20}.2.2
 
 networks:
   whatsapp_network:
@@ -31,4 +31,4 @@ networks:
     ipam:
       driver: default
       config:
-        - subnet: 172.68.0.0/16
+        - subnet: 172.20.0.0/16
