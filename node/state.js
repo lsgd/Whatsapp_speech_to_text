@@ -12,14 +12,11 @@ class State {
 
   // Set of chat with transcription disabled
   #chatTranscriptionsDisabled = {};
-  globalTranscriptionDisabled = false;
+  #globalTranscriptionDisabled = false;
 
   #initDone = false;
 
-  constructor(){
-    this.#chatTranscriptionsDisabled = {};
-    console.log(this.#chatTranscriptionsDisabled.constructor.name);
-  }
+  constructor(){}
 
   async init(){
     if (!this.#initDone){
@@ -33,7 +30,7 @@ class State {
     storage.setItem('transcribedMessages', this.#transcribedMessages);
     storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
     storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
-    storage.setItem('globalTranscriptionDisabled', this.globalTranscriptionDisabled);
+    storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
     console.log("State saved (async)");
   }
 
@@ -41,7 +38,7 @@ class State {
     this.#transcribedMessages = await storage.setItem('transcribedMessages');
     this.#transcribedMessagesIds = await storage.setItem('transcribedMessagesIds');
     this.#chatTranscriptionsDisabled = await storage.setItem('chatTranscriptionsDisabled');
-    this.globalTranscriptionDisabled = await storage.setItem('globalTranscriptionDisabled');
+    this.#globalTranscriptionDisabled = await storage.setItem('globalTranscriptionDisabled');
     console.log("State loaded");
   }
 
@@ -78,7 +75,16 @@ class State {
     }
     this.save();
   }
-}
+
+  get globalTranscriptionDisabled(){
+    return this.#globalTranscriptionDisabled;
+  }
+  
+  set globalTranscriptionDisabled(val){
+    this.#globalTranscriptionDisabled = val;
+    this.save();
+  }
+ }
 
 const _state = new State();
 exports.state = _state;
