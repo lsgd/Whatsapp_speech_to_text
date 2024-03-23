@@ -23,6 +23,8 @@ let chatTranscriptionsDisabled = {};
 let globalTranscriptionDisabled = false;
 // Key = Voice Message ID, Value = Response from bot.
 let transcribedMessages = {};
+let transcribedMessagesIds = [];
+const transcribedMessagesCacheSize = 100;
 
 async function init() {
     // Generates a QR code in the console for authentication.
@@ -279,10 +281,17 @@ async function ProcessVoiceMessage(message) {
             for (const result of data.results) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                transcribedMessages[getTimestampId(voiceMessage)] = {
+                let id = getTimestampId(voiceMessage);
+                transcribedMessages[id] = {
                     messageId: responseMessage.id._serialized,
                     chatId: chat.id._serialized,
                 };
+                transcribedMessagesIds.push(id);
+                if (transcribedMessagesIds.length > transcribedMessagesCacheSize) {
+                  let toRemove = transcribedMessagesIds.shift();
+                  delete transcribedMessages[toRemove];
+                }
+
             }
         })
         .catch((err) => {
