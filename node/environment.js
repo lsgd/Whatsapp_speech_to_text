@@ -59,7 +59,7 @@ switch (_speechRecognitionSystem) {
         const googleCloudSpeechLanguage = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_LANGUAGE, null);
         exports.googleCloudSpeechLanguage = googleCloudSpeechLanguage;
 
-        const _alternativeLanguages = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES, '').split(',');
+const _alternativeLanguages = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEECH_ALTERNATIVE_LANGUAGES, '').split(',');
         // $array.filter(Boolean) filters out all empty elements.
         const googleCloudSpeechAlternativeLanguages = _alternativeLanguages.map(result => result.trim()).filter(Boolean);
         exports.googleCloudSpeechAlternativeLanguages = googleCloudSpeechAlternativeLanguages;
@@ -119,7 +119,11 @@ switch (_speechRecognitionSystem) {
 }
 const speechRecognitionSystem = _sanitizedSpeechRecognitionSystem;
 exports.speechRecognitionSystem = speechRecognitionSystem;
-
-const _saveStateFile = getStringEnvVariable(process.env.SAVE_STATE_FILE, 'state.json');
-exports._saveStateFile = _saveStateFile;
 console.log('Used speech recognition system:', speechRecognitionSystem);
+
+const _saveStateDir = getStringEnvVariable(process.env.SAVE_STATE_DIR, './state');
+exports.saveStateDir = _saveStateDir;
+
+const _freshStateOnStart = getBooleanEnvVariable(process.env.NO_SAVED_STATE, false);
+exports.freshStateOnStart = _freshStateOnStart;
+

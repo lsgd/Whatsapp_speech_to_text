@@ -20,7 +20,10 @@ class State {
 
   async init(){
     if (!this.#initDone){
-      await storage.init(env.saveStateFile);
+      await storage.init({
+        dir: env.saveStateDir,
+        logging: true
+      });
     }
     this.#initDone = true;
   }
@@ -31,14 +34,13 @@ class State {
     storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
     storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
     storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
-    console.log("State saved (async)");
   }
 
   async load() {
-    this.#transcribedMessages = await storage.setItem('transcribedMessages');
-    this.#transcribedMessagesIds = await storage.setItem('transcribedMessagesIds');
-    this.#chatTranscriptionsDisabled = await storage.setItem('chatTranscriptionsDisabled');
-    this.#globalTranscriptionDisabled = await storage.setItem('globalTranscriptionDisabled');
+    this.#transcribedMessages = await storage.getItem('transcribedMessages') || this.#transcribedMessages;
+    this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
+    this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
+    this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
     console.log("State loaded");
   }
 
