@@ -11,14 +11,14 @@ RUN \
 
 RUN mkdir /app
 
-COPY index.js /app/index.js
-COPY configuration.js /app/configuration.js
-COPY environment.js /app/environment.js
-COPY speech_google.js /app/speech_google.js
-COPY speech_whisper.js /app/speech_whisper.js
-COPY speech_openai.js /app/speech_openai.js
-COPY languages.js /app/languages.js
-COPY package.json /app/package.json
+COPY index.js /app/
+COPY state.js /app/
+COPY environment.js /app/
+COPY speech_google.js /app/
+COPY speech_whisper.js /app/
+COPY speech_openai.js /app/
+COPY languages.js /app/
+COPY package.json /app/
 
 WORKDIR /app
 
