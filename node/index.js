@@ -21,6 +21,9 @@ const client = new Client({
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     },
+    // Use a fixed, old webVersionCache to work with the latest WA version
+    // remove once whatsapp-web.js catches up.
+    // https://github.com/pedroslopez/whatsapp-web.js/issues/2789
     webVersionCache: {
         type: 'remote',
         remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
