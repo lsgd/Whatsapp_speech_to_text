@@ -1,4 +1,7 @@
-FROM node
+FROM oven/bun:debian
+
+RUN apt-get update
+RUN apt-get install -y wget gnupg2
 
 # Install Chromium.
 RUN \
@@ -22,6 +25,7 @@ COPY package.json /app/
 
 WORKDIR /app
 
-RUN npm install
+RUN bun pm trust protobufjs || true
+RUN bun install
 
-CMD ["node","index.js"]
+CMD ["bun","index.js"]
