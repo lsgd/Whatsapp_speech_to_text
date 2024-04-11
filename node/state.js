@@ -8,7 +8,7 @@ class State {
   // Track message id by order of insertion.
   #transcribedMessagesIds = [];
   // Max number of messages to track.
-  transcribedMessagesCacheSize = 100;
+  #transcribedMessagesCacheSize = 100;
 
   // Set of chat with transcription disabled
   #chatTranscriptionsDisabled = {};
@@ -55,7 +55,7 @@ class State {
   trackMessage(id, data){
     this.#transcribedMessages[id] = data;
     this.#transcribedMessagesIds.push(id);
-    if (this.#transcribedMessagesIds.length > transcribedMessagesCacheSize){
+    if (this.#transcribedMessagesIds.length > this.#transcribedMessagesCacheSize){
       let toRemove = this.#transcribedMessagesIds.shift();
       delete this.#transcribedMessages[toRemove];
     }
