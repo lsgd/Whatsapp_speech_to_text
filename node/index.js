@@ -11,15 +11,34 @@ const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
 const { state } = require('./state');
 
+// see versions here: https://github.com/wppconnect-team/wa-version/tree/main/html
+const wwebVersion = '2.2412.54';
+
+const puppeteerOptions = {
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+};
+
+if (env.chromiumPath) {
+    puppeteerOptions['executablePath'] = env.chromiumPath;
+}
+
+if (env.userAgent) {
+    puppeteerOptions.args.push(`--user-agent="${env.userAgent}"`);
+}
+
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
     authStrategy: new LocalAuth({dataPath: env.chromeDataPath}),
-    puppeteer: {
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    }
+    puppeteer: puppeteerOptions,
+    // Use a fixed, old webVersionCache to work with the latest WA version
+    // remove once whatsapp-web.js catches up.
+    // https://github.com/pedroslopez/whatsapp-web.js/issues/2789
+    webVersionCache: {
+        type: 'remote',
+        remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
+    },
 });
-
 
 async function init() {
   
