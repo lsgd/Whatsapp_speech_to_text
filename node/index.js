@@ -309,15 +309,15 @@ async function ProcessVoiceMessage(message) {
             for (const result of data.results) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                try {
-                    let id = getTimestampId(voiceMessage);
-                    state.trackMessage(id, {
-                        messageId: responseMessage.id._serialized,
-                        chatId: chat.id._serialized,
-                    });
+                try{
+                  let id = getTimestampId(voiceMessage);
+                  state.trackMessage(id, {
+                      messageId: responseMessage.id._serialized,
+                      chatId: chat.id._serialized,
+                  });
                 } catch (err) {
-                    console.log(err);
-                    console.log(err.stack);
+                  console.log(`Error while caching message id: ${err}`);
+                  console.log(err.stack);
                 }
             }
         })
