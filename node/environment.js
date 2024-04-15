@@ -127,3 +127,9 @@ exports.saveStateDir = _saveStateDir;
 const _freshStateOnStart = getBooleanEnvVariable(process.env.NO_SAVED_STATE, false);
 exports.freshStateOnStart = _freshStateOnStart;
 
+const _userAgent = getStringEnvVariable(process.env.USER_AGENT, null);
+exports.userAgent = _userAgent;
+
+const _chromiumPath = getStringEnvVariable(process.env.CHROMIUM_PATH, null);
+exports.chromiumPath = _chromiumPath;
+
