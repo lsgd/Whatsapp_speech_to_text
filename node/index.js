@@ -197,8 +197,9 @@ async function getMessageToTranscribe(message) {
         }
         // Do not transcribe individual chat messages where transcription got disabled.
         const chat = await message.getChat();
-
-        if (state.isChatTranscriptionDisabled()){
+        let id = chat.id._serialized;
+        if (state.isChatTranscriptionDisabled(id)){
+            console.log(`Transcription for ${id} is disabled.`);
             return null;
         }
 
