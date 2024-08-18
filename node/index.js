@@ -11,9 +11,6 @@ const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
 const { state } = require('./state');
 
-// see versions here: https://github.com/wppconnect-team/wa-version/tree/main/html
-const wwebVersion = '2.2412.54';
-
 const puppeteerOptions = {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -31,13 +28,6 @@ if (env.userAgent) {
 const client = new Client({
     authStrategy: new LocalAuth({dataPath: env.chromeDataPath}),
     puppeteer: puppeteerOptions,
-    // Use a fixed, old webVersionCache to work with the latest WA version
-    // remove once whatsapp-web.js catches up.
-    // https://github.com/pedroslopez/whatsapp-web.js/issues/2789
-    webVersionCache: {
-        type: 'remote',
-        remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${wwebVersion}.html`,
-    },
 });
 
 async function init() {
@@ -96,7 +86,7 @@ async function init() {
     });
 
     // Initialize client
-    console.log('Initialize Whatsapp client...')
+    console.log(`Initialize Whatsapp client... if it hangs try to remove the ${env.chromeDataPath}session directory`);
     await client.initialize();
 }
 
@@ -106,6 +96,7 @@ async function getContactInfo(message) {
     // In user-to-user chats the .from property contains the contact ID.
     let contactID = (message.author) ? message.author : message.from;
     let contact = await client.getContactById(contactID);
+
 
     return [contact.name, contact.isMyContact];
 }

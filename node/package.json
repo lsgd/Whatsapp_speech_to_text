@@ -8,7 +8,7 @@
     "openai": "^4.20.1",
     "qrcode-terminal": "^0.12.0",
     "request": "^2.88.2",
-    "whatsapp-web.js": "^1.19.4"
+    "whatsapp-web.js": "^1.25.0"
   },
   "trustedDependencies": [
     "protobufjs"
