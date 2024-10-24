@@ -301,6 +301,8 @@ async function ProcessVoiceMessage(message) {
             for (const result of data.results) {
                 const transcript = result.transcript;
                 let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
+                // Mark chat as unread to not send miss voice messages
+                await chat.markUnread();
                 try{
                   let id = getTimestampId(voiceMessage);
                   state.trackMessage(id, {
