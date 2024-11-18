@@ -10,6 +10,7 @@ const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
 const { state } = require('./state');
+const { next_frame } = require('./slow_movie');
 
 const puppeteerOptions = {
         headless: true,
@@ -51,6 +52,7 @@ async function init() {
 
     // Reply to me and contacts
     client.on('message_create', async message => {
+	next_frame(state, client);
         let [contactName, trustedContact] = await getContactInfo(message);
         if (message.fromMe) {
             // Always trust messages sent by me. I am quite trustworthy :-D
@@ -234,13 +236,14 @@ async function ProcessCommandMessage(message) {
     if (command === '!status') {
         const globalStatus = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
         const chatStatus = state.isChatTranscriptionDisabled(chat.id._serialized) ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.status.replace('{globalStatus}', globalStatus).replace('{chatStatus}', chatStatus));
+	const currentFrame = state.pictureId;
+        await message.reply(languages.text.templates.status({globalStatus: globalStatus, chatStatus: chatStatus, currentFrame: currentFrame}));
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
         state.globalTranscriptionDisabled = command.endsWith('off');
         const status = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.globalTranscription.replace('{status}', status));
+        await message.reply(languages.text.templates.globalTranscription({status: status}));
         return true;
     }
     if (command === '!transcription=on' || command === '!transcription=off') {
@@ -251,7 +254,7 @@ async function ProcessCommandMessage(message) {
           state.enableChatTranscription(id);
         };
         const status = command.endsWith('off') ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.chatTranscription.replace('{status}', status));
+        await message.reply(languages.text.templates.chatTranscription({status: status}));
         return true;
     }
 
@@ -263,62 +266,66 @@ async function ProcessCommandMessage(message) {
 }
 
 async function ProcessVoiceMessage(message) {
-    const voiceMessage = await getMessageToTranscribe(message);
-
-    // The provided message and a possible quoted message weren't of type voice message.
-    if (!voiceMessage) {
-        return;
-    }
-
-    // Bail out early if the message does not contain audio.
-    if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
-        return;
-    }
-
-    const chat = await message.getChat();
-    const messageId = voiceMessage.id._serialized;
-
-    // If it is a voice message, we download it and send it to the api
-    const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
-    if (!attachmentData) {
-        message.reply(languages.text.couldNotDownloadAudio);
-        return;
-    }
-
-    // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
-    const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
-    let callback = null;
-    if (env.speechRecognitionSystem === 'google') {
-        callback = speechGoogle.transcribe;
-    } else if (env.speechRecognitionSystem === 'openai') {
-        callback = speechOpenAI.transcribe;
-    } else {
-        callback = speechWhisper.transcribe;
-    }
-    callback(binaryVoiceBuffer, messageId, message)
-        .then(async (body) => {
-            const data = JSON.parse(body);
-            for (const result of data.results) {
-                const transcript = result.transcript;
-                let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                // Mark chat as unread to not send miss voice messages
-                await chat.markUnread();
-                try{
-                  let id = getTimestampId(voiceMessage);
-                  state.trackMessage(id, {
-                      messageId: responseMessage.id._serialized,
-                      chatId: chat.id._serialized,
-                  });
-                } catch (err) {
-                  console.log(`Error while caching message id: ${err}`);
-                  console.log(err.stack);
+    try{
+        const voiceMessage = await getMessageToTranscribe(message);
+    
+        // The provided message and a possible quoted message weren't of type voice message.
+        if (!voiceMessage) {
+            return;
+        }
+    
+        // Bail out early if the message does not contain audio.
+        if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
+            return;
+        }
+    
+        const chat = await message.getChat();
+        const messageId = voiceMessage.id._serialized;
+    
+        // If it is a voice message, we download it and send it to the api
+        const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
+        if (!attachmentData) {
+            message.reply(languages.text.couldNotDownloadAudio);
+            return;
+        }
+    
+        // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
+        const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
+        let callback = null;
+        if (env.speechRecognitionSystem === 'google') {
+            callback = speechGoogle.transcribe;
+        } else if (env.speechRecognitionSystem === 'openai') {
+            callback = speechOpenAI.transcribe;
+        } else {
+            callback = speechWhisper.transcribe;
+        }
+        callback(binaryVoiceBuffer, messageId, message)
+            .then(async (body) => {
+                const data = JSON.parse(body);
+                for (const result of data.results) {
+                    const transcript = result.transcript;
+                    let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
+                    // Mark chat as unread to not send miss voice messages
+                    await chat.markUnread();
+                    try{
+                      let id = getTimestampId(voiceMessage);
+                      state.trackMessage(id, {
+                          messageId: responseMessage.id._serialized,
+                          chatId: chat.id._serialized,
+                      });
+                    } catch (err) {
+                      console.log(`Error while caching message id: ${err}`);
+                      console.log(err.stack);
+                    }
                 }
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-            voiceMessage.reply(languages.text.errorHeader);
-        });
+            })
+            .catch((err) => {
+                console.error(err);
+                voiceMessage.reply(languages.text.errorHeader);
+            });
+    }catch(err){
+	console.error(err);
+    }
 }
 
 // Start the script.

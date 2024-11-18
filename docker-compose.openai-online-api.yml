@@ -5,7 +5,8 @@ services:
     build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
     container_name: 'speech_to_text_node'
     volumes:
-       - './node/data:/app/data:rw'
+       - '/root/run/data:/app/data:rw'
+       - '/root/run/media:/media:rw'
     environment:
       # Location of the WhatsApp-web chrome session. Matches the volume path from above.
       CHROME_DATA_PATH: '/app/data/'
@@ -21,6 +22,7 @@ services:
       # It's unclear which naming scheme is used for the languages!
       # Details on https://platform.openai.com/docs/guides/speech-to-text/supported-languages
       OPENAI_EXCLUDED_TRANSLATION_LANGUAGES: 'english,german'
+    restart: unless-stopped
     networks:
       whatsapp_network:
         ipv4_address: ${IPV4_NETWORK:-172.20}.2.2

@@ -15,6 +15,7 @@ class State {
   #globalTranscriptionDisabled = false;
 
   #initDone = false;
+  pictureId = 1;
 
   constructor(){}
 
@@ -34,6 +35,7 @@ class State {
     storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
     storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
     storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
+    storage.setItem('pictureId', this.pictureId);
   }
 
   async load() {
@@ -41,6 +43,7 @@ class State {
     this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
     this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
     this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
+    this.pictureId = await storage.getItem('pictureId') || this.pictureId;
     console.log("State loaded");
   }
 
