@@ -22,6 +22,7 @@ if (env.chromiumPath) {
 }
 
 if (env.userAgent) {
+    console.log(`Setting user agent to ${env.userAgent}`);
     puppeteerOptions.args.push(`--user-agent="${env.userAgent}"`);
 }
 

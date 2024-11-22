@@ -2,5 +2,7 @@ version: '3.5'
 
 services:
   speech_to_text_node:
-    build: ./node/
+    build: 
+      context: ./node
+      dockerfile: Dockerfile.node
     container_name: 'speech_to_text_node'

@@ -67,8 +67,10 @@ async function draw_single(state, client){
 
 function extract_frame(movie, frame_no, file_out){
   console.log(`Extracting frame ${frame_no} from ${movie} to ${file_out}`);
-  const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no})`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
-  //const res = spawn("ffmpeg",["-filters"]);
+  //const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no})`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
+  const font='/usr/share/fonts/inconsolata/Inconsolata-Regular.otf';
+  console.log(["ffmpeg", "-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:n+1\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out].join(" ")); 
+  const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:n+1\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
   err = false;
   //res.stdout.on('data', (data) => { console.log(`stdout: ${data}`); });
   //res.stderr.on('data', (data) => { console.error(`stderr: ${data}`); /*err=true;*/ });
