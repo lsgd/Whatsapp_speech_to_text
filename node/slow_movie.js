@@ -1,5 +1,6 @@
 const {MessageMedia} = require('whatsapp-web.js');
 const { spawn } = require('node:child_process');
+const env = require('./environment');
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
@@ -40,8 +41,8 @@ async function draw_single(state, client){
   timeoutId = null;
   id = state.pictureId;
   const file_name = `/media/single.png`;
-  const movie_name = `/media/fly.mp4`;
-  const frame_mult = 8;
+  const movie_name = env.slowMovieFile;
+  const frame_mult = env.slowMovieSkipFrames;
   console.log(`Drawing now (${id}) ${file_name}`);
   media = null;
   try{

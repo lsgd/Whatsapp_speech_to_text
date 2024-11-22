@@ -52,7 +52,9 @@ async function init() {
 
     // Reply to me and contacts
     client.on('message_create', async message => {
-	next_frame(state, client);
+	if (env.playSlowMovie){
+	    next_frame(state, client);
+	}
         let [contactName, trustedContact] = await getContactInfo(message);
         if (message.fromMe) {
             // Always trust messages sent by me. I am quite trustworthy :-D

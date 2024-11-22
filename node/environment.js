@@ -133,3 +133,12 @@ exports.userAgent = _userAgent;
 const _chromiumPath = getStringEnvVariable(process.env.CHROMIUM_PATH, null);
 exports.chromiumPath = _chromiumPath;
 
+const _playSlowMovie = getBoolEnvVariable(process.env.PLAY_SLOW_MOVIE, false);
+exports.playSlowMovie = _playSlowMovie;
+
+const _slowMovieFile = getStringEnvVariable(process.env.SLOW_MOVIE_FILE, null);
+exports.slowMovieFile = _slowMovieFile;
+
+const _slowMovieSkipFrames = Number(getStringEnvVariable(process.env.SLOW_MOVIE_SKIP_FRAMES, "8"));
+exports.slowMovieSkipFrames = _slowMovieSkipFrames; 
+
