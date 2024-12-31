@@ -20,52 +20,33 @@ class State {
 
   async init(){
     if (!this.#initDone){
+      console.log('Init state: Started');
       await storage.init({
         dir: env.saveStateDir,
         logging: true
       });
+      console.log('Init state: Finished');
     }
     this.#initDone = true;
   }
 
 
   async save() {
+    console.log('Save state: Started');
     await storage.setItem('transcribedMessages', this.#transcribedMessages);
     await storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
     await storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
     await storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
+    console.log('Save state: Finished');
   }
 
   async load() {
-    try {
-      this.#transcribedMessages = await storage.getItem('transcribedMessages');
-    }
-    catch (err) {
-        console.log(`Failed to fetch state of transcribedMessage, fallback to empty list.`);
-        this.#transcribedMessages = {};
-    }
-    try {
-      this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
-    }
-    catch (err) {
-        console.log(`Failed to fetch state of transcribedMessagesIds, fallback to empty list.`);
-        this.#transcribedMessagesIds = [];
-    }
-    try {
-      this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
-    }
-    catch (err) {
-        console.log(`Failed to fetch state of chatTranscriptionsDisabled, fallback to empty list.`);
-        this.#transcribedMessagesIds = {};
-    }
-    try {
-      this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
-    }
-    catch (err) {
-        console.log(`Failed to fetch state of globalTranscriptionDisabled, fallback to empty list.`);
-        this.#globalTranscriptionDisabled = false;
-    }
-    console.log("State loaded");
+    console.log('Load state: Started');
+    this.#transcribedMessages = await storage.getItem('transcribedMessages');
+    this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
+    this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
+    this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
+    console.log('Load state: Finished');
   }
 
   getMessage(id){
