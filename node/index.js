@@ -246,9 +246,9 @@ async function ProcessCommandMessage(message) {
     if (command === '!transcription=on' || command === '!transcription=off') {
         let id = chat.id._serialized;
         if (command.endsWith('off')){
-          state.disableChatTranscription(id);
+          await state.disableChatTranscription(id);
         }else{
-          state.enableChatTranscription(id);
+          await state.enableChatTranscription(id);
         };
         const status = command.endsWith('off') ? languages.text.commands.disabled : languages.text.commands.enabled;
         await message.reply(languages.text.commands.chatTranscription.replace('{status}', status));
@@ -305,7 +305,7 @@ async function ProcessVoiceMessage(message) {
                 await chat.markUnread();
                 try{
                   let id = getTimestampId(voiceMessage);
-                  state.trackMessage(id, {
+                  await state.trackMessage(id, {
                       messageId: responseMessage.id._serialized,
                       chatId: chat.id._serialized,
                   });

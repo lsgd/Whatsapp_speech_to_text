@@ -30,17 +30,41 @@ class State {
 
 
   async save() {
-    storage.setItem('transcribedMessages', this.#transcribedMessages);
-    storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
-    storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
-    storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
+    await storage.setItem('transcribedMessages', this.#transcribedMessages);
+    await storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
+    await storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
+    await storage.setItem('globalTranscriptionDisabled', this.#globalTranscriptionDisabled);
   }
 
   async load() {
-    this.#transcribedMessages = await storage.getItem('transcribedMessages') || this.#transcribedMessages;
-    this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
-    this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
-    this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
+    try {
+      this.#transcribedMessages = await storage.getItem('transcribedMessages');
+    }
+    catch (err) {
+        console.log(`Failed to fetch state of transcribedMessage, fallback to empty list.`);
+        this.#transcribedMessages = {};
+    }
+    try {
+      this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
+    }
+    catch (err) {
+        console.log(`Failed to fetch state of transcribedMessagesIds, fallback to empty list.`);
+        this.#transcribedMessagesIds = [];
+    }
+    try {
+      this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
+    }
+    catch (err) {
+        console.log(`Failed to fetch state of chatTranscriptionsDisabled, fallback to empty list.`);
+        this.#transcribedMessagesIds = {};
+    }
+    try {
+      this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
+    }
+    catch (err) {
+        console.log(`Failed to fetch state of globalTranscriptionDisabled, fallback to empty list.`);
+        this.#globalTranscriptionDisabled = false;
+    }
     console.log("State loaded");
   }
 
@@ -52,30 +76,30 @@ class State {
     return id in this.#transcribedMessages; 
   }
 
-  trackMessage(id, data){
+  async trackMessage(id, data){
     this.#transcribedMessages[id] = data;
     this.#transcribedMessagesIds.push(id);
     if (this.#transcribedMessagesIds.length > this.#transcribedMessagesCacheSize){
       let toRemove = this.#transcribedMessagesIds.shift();
       delete this.#transcribedMessages[toRemove];
     }
-    this.save();
+    await this.save();
   }
 
   isChatTranscriptionDisabled(chatId){
     return chatId in this.#chatTranscriptionsDisabled;
   }
 
-  disableChatTranscription(chatId){
+  async disableChatTranscription(chatId){
     this.#chatTranscriptionsDisabled[chatId] = true;
-    this.save();
+    await this.save();
   }
 
-  enableChatTranscription(chatId){
+  async enableChatTranscription(chatId){
     if (chatId in this.#chatTranscriptionsDisabled) {
       delete this.#chatTranscriptionsDisabled[chatId];
     }
-    this.save();
+    await this.save();
   }
 
   get globalTranscriptionDisabled(){
