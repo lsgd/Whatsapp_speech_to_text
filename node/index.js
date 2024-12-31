@@ -4,6 +4,9 @@ const qrcode = require('qrcode-terminal');
 // Required for Whatsapp Web connection.
 const {Client, LocalAuth} = require('whatsapp-web.js');
 
+// see versions here: https://github.com/wppconnect-team/wa-version/tree/main/html
+const whatsappWebVersion = '2.3000.1017845299-alpha';
+
 const env = require('./environment');
 const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
@@ -15,6 +18,11 @@ const { next_frame } = require('./slow_movie');
 const puppeteerOptions = {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
+};
+
+const webVersionCacheOptions = {
+    type: 'remote',
+    remotePath: `https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/${whatsappWebVersion}.html`,
 };
 
 if (env.chromiumPath) {
@@ -30,10 +38,11 @@ if (env.userAgent) {
 const client = new Client({
     authStrategy: new LocalAuth({dataPath: env.chromeDataPath}),
     puppeteer: puppeteerOptions,
+    webVersionCache: webVersionCacheOptions,
 });
 
 async function init() {
-  
+
     await state.init();
 
     if (!env.freshStateOnStart){
