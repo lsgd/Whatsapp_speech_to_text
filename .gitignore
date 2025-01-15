@@ -16,3 +16,5 @@ data
 session
 Usefull.md
 .idea/
+docker-compose.yml
+*.override.yml
