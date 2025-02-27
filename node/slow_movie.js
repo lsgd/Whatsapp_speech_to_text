@@ -1,11 +1,13 @@
 const {MessageMedia} = require('whatsapp-web.js');
 const { spawn } = require('node:child_process');
 const env = require('./environment');
+const path = require('node:path');
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * max);
 }
 
+var processingFrame = false;
 var timeoutId = null;
 async function draw(state, client){
   timeoutId = null;
@@ -38,27 +40,39 @@ _next_frame = (state, client) => {
 }
 
 async function draw_single(state, client){
-  timeoutId = null;
-  id = state.pictureId;
-  const file_name = `/media/single.png`;
-  const movie_name = env.slowMovieFile;
-  const frame_mult = env.slowMovieSkipFrames;
-  console.log(`Drawing now (${id}) ${file_name}`);
   media = null;
-  try{
-    if (!extract_frame(movie_name, id * frame_mult, file_name)){
-      console.log("Loading media");
-      media = MessageMedia.fromFilePath(file_name);
-    }else{
-      console.log("Extraction failed");
+  timeoutId = null;
+  if (env.slowMovieFrames != null){
+    padded_id = state.pictureId.toString().padStart(6, "0");
+    media_file = path.join(env.slowMovieFrames, `frame_${padded_id}.jpg`);
+    console.log(`Loading image from ${media_file}`);
+    try{
+      media = MessageMedia.fromFilePath(media_file);
+    } catch(error) {
+      console.error(error);
     }
-  } catch(error) {
-    console.error(error);
+  }
+  else{
+    id = state.pictureId;
+    const file_name = `/media/single.png`;
+    const movie_name = env.slowMovieFile;
+    const frame_mult = env.slowMovieSkipFrames;
+    console.log(`Drawing now (${id}) ${file_name}`);
+    try{
+      if (!extract_frame(movie_name, id * frame_mult, file_name)){
+        console.log("Loading media");
+        media = MessageMedia.fromFilePath(file_name);
+      }else{
+        console.log("Extraction failed");
+      }
+    } catch(error) {
+      console.error(error);
+    }
   }
   if (media!=null){
     console.log("Setting profile picture");
     await client.setProfilePicture(media);
-    state.pictureId = id+1;
+    state.pictureId += 1;
     state.save();
   }
 }
@@ -66,6 +80,11 @@ async function draw_single(state, client){
 
 
 function extract_frame(movie, frame_no, file_out){
+  if (processingFrame){
+    console.log("Already processing: skipping");
+    return 1;
+  }
+  processingFrame = true;
   console.log(`Extracting frame ${frame_no} from ${movie} to ${file_out}`);
   //const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no})`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
   const font='/usr/share/fonts/inconsolata/Inconsolata-Regular.otf';
@@ -74,7 +93,7 @@ function extract_frame(movie, frame_no, file_out){
   err = false;
   //res.stdout.on('data', (data) => { console.log(`stdout: ${data}`); });
   //res.stderr.on('data', (data) => { console.error(`stderr: ${data}`); /*err=true;*/ });
-  res.on('close', (code) => { console.log(`done (${code})`);});
+  res.on('close', (code) => { processingFrame = false; console.log(`done (${code})`);});
   return err;
 }
 

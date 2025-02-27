@@ -260,6 +260,17 @@ async function ProcessCommandMessage(message) {
         await message.reply(languages.text.templates.chatTranscription({status: status}));
         return true;
     }
+    if (command.startsWith('!image=')){
+        var elements = command.split("[=]");
+	if (elements.length < 2){ return true; }
+        var maybe_id = parseInt(elements[1], 10);
+        if (isNaN(maybe_id)){
+            await message.reply(`Invalid id ${maybe_id}`);
+            return true;
+	}
+	state.pictureId = maybe_id;
+	state.save();
+    }
 
     if (!env.transcriptionCommands.includes(command)) {
         console.log(`You sent an unknown command "${command}".`);

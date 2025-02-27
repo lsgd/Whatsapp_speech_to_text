@@ -142,3 +142,5 @@ exports.slowMovieFile = _slowMovieFile;
 const _slowMovieSkipFrames = Number(getStringEnvVariable(process.env.SLOW_MOVIE_SKIP_FRAMES, "8"));
 exports.slowMovieSkipFrames = _slowMovieSkipFrames; 
 
+const _slowMovieFrames = getStringEnvVariable(process.env.SLOW_MOVIE_FRAMES, null);
+exports.slowMovieFrames = _slowMovieFrames;
