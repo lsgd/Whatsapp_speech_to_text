@@ -27,8 +27,8 @@ async function draw(state, client){
 }
 
 _next_frame = (state, client) => {
-  timeout = 5000 + getRandomInt(10)*1000;
-  console.log("Drawing next frame in " + timeout/1000);
+  timeout = 15000 + getRandomInt(30)*1000;
+  console.log("Drawing next frame IN " + timeout/1000);
   if (timeoutId){
       clearTimeout(timeoutId);
   }
@@ -69,8 +69,8 @@ function extract_frame(movie, frame_no, file_out){
   console.log(`Extracting frame ${frame_no} from ${movie} to ${file_out}`);
   //const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no})`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
   const font='/usr/share/fonts/inconsolata/Inconsolata-Regular.otf';
-  console.log(["ffmpeg", "-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:n+1\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out].join(" ")); 
-  const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:n+1\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
+  console.log(["ffmpeg", "-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:${frame_no}\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out].join(" ")); 
+  const res = spawn("ffmpeg",["-i", movie, "-vf", `select=eq(n\\,${frame_no}),drawtext=fontsize=10:fontfile=${font}:text='%{eif\\:${frame_no}\\:d}':x=(w-tw)/2:y=h-(2*lh):fontcolor=white:box=1:boxcolor=0x00000099`, "-frames:v", "1", "-update", "true", "-y", file_out]); 
   err = false;
   //res.stdout.on('data', (data) => { console.log(`stdout: ${data}`); });
   //res.stderr.on('data', (data) => { console.error(`stderr: ${data}`); /*err=true;*/ });

@@ -51,4 +51,4 @@ Check the detailed documentation of the different Speech-to-text implementations
 
 - [ ] Persist configuration state of the bot based on chat message input
     - Currently, if transcription is disabled within a single chat this information will be lost when the service
-      restarts.
+      restarts.sh run_docker.sh start -d
