@@ -23,7 +23,7 @@ class State {
     if (!this.#initDone){
       await storage.init({
         dir: env.saveStateDir,
-        logging: true
+	//logging: true
       });
     }
     this.#initDone = true;
