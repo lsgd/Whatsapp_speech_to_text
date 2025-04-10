@@ -5,10 +5,10 @@
     "@google-cloud/storage": "^7.7.0",
     "fluent-ffmpeg": "^2.1.2",
     "node-persist": "^4.0.1",
-    "openai": "^4.20.1",
+    "openai": "^4.92.1",
     "qrcode-terminal": "^0.12.0",
     "request": "^2.88.2",
-    "whatsapp-web.js": "^1.25.0"
+    "whatsapp-web.js": "^1.27.0"
   },
   "trustedDependencies": [
     "protobufjs"
