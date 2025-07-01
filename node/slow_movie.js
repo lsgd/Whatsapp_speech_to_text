@@ -13,7 +13,7 @@ async function draw(state, client){
   timeoutId = null;
   id = state.pictureId;
   ids = ("0000000000" + id).slice(-10);
-  file_name = `/media/frames/BadApple${ids}.png`;
+  file_name = `/app/media/frames/BadApple${ids}.png`;
   console.log("Drawing now " + file_name);
   media = null;
   try{
@@ -54,7 +54,7 @@ async function draw_single(state, client){
   }
   else{
     id = state.pictureId;
-    const file_name = `/media/single.png`;
+    const file_name = `/app/media/single.png`;
     const movie_name = env.slowMovieFile;
     const frame_mult = env.slowMovieSkipFrames;
     console.log(`Drawing now (${id}) ${file_name}`);
