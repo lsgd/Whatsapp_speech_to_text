@@ -319,12 +319,13 @@ async function ProcessVoiceMessage(message) {
         // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
         const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
         let callback = null;
+	console.log(`Speech recognition system: ${env.speechRecognitionSystem}`);
         if (env.speechRecognitionSystem === 'google') {
             callback = speechGoogle.transcribe;
         } else if (env.speechRecognitionSystem === 'openai') {
             callback = speechOpenAIWhisper.transcribe;
         } else if (env.speechRecognitionSystem === 'openai4o') {
-            callback = speechOpen4oTranscribe.transcribe;
+            callback = speechOpenAI4oTranscribe.transcribe;
         } else {
             callback = speechWhisper.transcribe;
         }

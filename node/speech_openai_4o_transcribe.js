@@ -34,8 +34,8 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                 }
                 const transcription = await openai.audio.transcriptions.create({
                     file: fs.createReadStream(destFile),
-                    model: 'whisper-1',
-                    response_format: 'verbose_json',
+                    model: 'gpt-4o-transcribe',
+                    response_format: 'json',
                 });
                 console.log(`Transcription successful! Detected language: ${transcription.language}.\nText: ${transcription.text}`);
                 let text = transcription.text;
@@ -44,7 +44,7 @@ async function transcribe(binaryVoiceBuffer, voiceMessageId, message) {
                     const translation = await openai.audio.translations.create({
                         file: fs.createReadStream(destFile),
                         model: 'gpt-4o-transcribe',
-                        response_format: 'verbose_json',
+                        response_format: 'json',
                     });
                     text = translation.text;
                     console.log(`Translation successful!\nText: ${text}`);

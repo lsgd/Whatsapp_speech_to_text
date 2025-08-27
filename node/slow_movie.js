@@ -42,6 +42,7 @@ _next_frame = (state, client) => {
 async function draw_single(state, client){
   media = null;
   timeoutId = null;
+  id = state.pictureId;
   if (env.slowMovieFrames != null){
     padded_id = state.pictureId.toString().padStart(6, "0");
     media_file = path.join(env.slowMovieFrames, `frame_${padded_id}.jpg`);
@@ -53,7 +54,6 @@ async function draw_single(state, client){
     }
   }
   else{
-    id = state.pictureId;
     const file_name = `/app/media/single.png`;
     const movie_name = env.slowMovieFile;
     const frame_mult = env.slowMovieSkipFrames;

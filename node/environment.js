@@ -91,6 +91,7 @@ const _alternativeLanguages = getStringEnvVariable(process.env.GOOGLE_CLOUD_SPEE
         }
         break;
     case 'openai':
+    case 'openai4o':
         _sanitizedSpeechRecognitionSystem = _speechRecognitionSystem;
         // The OpenAI class automatically gets the key from the environment variable.
         // We only check that this variable is set and do not export its value;
