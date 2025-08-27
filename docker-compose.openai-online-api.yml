@@ -5,8 +5,7 @@ services:
     build: https://github.com/lsgd/Whatsapp_speech_to_text.git#main:node
     container_name: 'speech_to_text_node'
     volumes:
-       - '/root/run/data:/app/data:rw'
-       - '/root/run/media:/media:rw'
+      - './node/data:/app/data:rw'
     environment:
       # Location of the WhatsApp-web chrome session. Matches the volume path from above.
       CHROME_DATA_PATH: '/app/data/'
