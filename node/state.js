@@ -21,16 +21,19 @@ class State {
 
   async init(){
     if (!this.#initDone){
+      console.log('Init state: Started');
       await storage.init({
         dir: env.saveStateDir,
 	//logging: true
       });
+      console.log('Init state: Finished');
     }
     this.#initDone = true;
   }
 
 
   async save() {
+    console.log('Save state: Started');
     await storage.setItem('transcribedMessages', this.#transcribedMessages);
     await storage.setItem('transcribedMessagesIds', this.#transcribedMessagesIds);
     await storage.setItem('chatTranscriptionsDisabled', this.#chatTranscriptionsDisabled);
