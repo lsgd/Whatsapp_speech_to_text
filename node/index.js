@@ -11,7 +11,8 @@ const env = require('./environment');
 const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
-const speechOpenAI = require('./speech_openai');
+const speechOpenAIWhisper = require('./speech_openai_whisper');
+const speechOpenAI4oTranscribe = require('./speech_openai_4o_transcribe');
 const { state } = require('./state');
 const { next_frame } = require('./slow_movie');
 
@@ -270,13 +271,16 @@ async function ProcessCommandMessage(message) {
         return true;
     }
     if (command.startsWith('!image=')){
-        var elements = command.split("[=]");
+	console.log(`Received command ${command}`);
+        var elements = command.split("=");
 	if (elements.length < 2){ return true; }
         var maybe_id = parseInt(elements[1], 10);
+	console.log(`Elements: ${elements[0]},${elements[1]}`);
         if (isNaN(maybe_id)){
             await message.reply(`Invalid id ${maybe_id}`);
             return true;
 	}
+	console.log(`Saving picture id ${maybe_id}`);
 	state.pictureId = maybe_id;
 	state.save();
     }
@@ -318,7 +322,9 @@ async function ProcessVoiceMessage(message) {
         if (env.speechRecognitionSystem === 'google') {
             callback = speechGoogle.transcribe;
         } else if (env.speechRecognitionSystem === 'openai') {
-            callback = speechOpenAI.transcribe;
+            callback = speechOpenAIWhisper.transcribe;
+        } else if (env.speechRecognitionSystem === 'openai4o') {
+            callback = speechOpen4oTranscribe.transcribe;
         } else {
             callback = speechWhisper.transcribe;
         }

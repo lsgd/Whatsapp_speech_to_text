@@ -18,7 +18,8 @@ COPY state.js /app/
 COPY environment.js /app/
 COPY speech_google.js /app/
 COPY speech_whisper.js /app/
-COPY speech_openai.js /app/
+COPY speech_openai_whisper.js /app/
+COPY speech_openai_4o_transcribe.js /app/
 COPY languages.js /app/
 COPY slow_movie.js /app/
 COPY runnode.sh /app/
