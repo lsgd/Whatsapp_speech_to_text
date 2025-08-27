@@ -332,7 +332,7 @@ async function ProcessVoiceMessage(message) {
                     await chat.markUnread();
                     try{
                       let id = getTimestampId(voiceMessage);
-                      sTate.trackMessage(id, {
+                      state.trackMessage(id, {
                           messageId: responseMessage.id._serialized,
                           chatId: chat.id._serialized,
                       });

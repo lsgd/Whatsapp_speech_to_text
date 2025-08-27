@@ -72,7 +72,7 @@ async function draw_single(state, client){
   if (media!=null){
     console.log("Setting profile picture");
     await client.setProfilePicture(media);
-    state.pictureId += 1;
+    state.pictureId = id+1;
     state.save();
   }
 }

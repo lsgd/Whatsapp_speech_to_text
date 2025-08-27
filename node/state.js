@@ -75,7 +75,7 @@ class State {
     }
     catch (err) {
         console.log(`Failed to fetch state of pictureId, fallback to 1.`);
-        this.#pictureId = 1;
+        this.pictureId = 1;
     }
     
     console.log("State loaded");
