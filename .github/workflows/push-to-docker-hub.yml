@@ -48,9 +48,9 @@ jobs:
           file: ./node/Dockerfile
           push: true
           tags: |
-            # set latest tag for master branch
+# set latest tag for master branch
             type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            # branch event (refs/heads/main --> main)
+# branch event (refs/heads/main --> main)
             type=ref,event=branch
           labels: ${{ steps.meta.outputs.labels }}
 
