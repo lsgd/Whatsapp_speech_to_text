@@ -48,7 +48,7 @@ jobs:
           context: ./node
           file: ./node/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: lszrh/whatsapp-transcriptions:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
