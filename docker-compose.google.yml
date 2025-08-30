@@ -2,7 +2,7 @@ version: '3.5'
 
 services:
   speech_to_text_node:
-    build: lszrh/whatsapp-transcriptions:latest
+    image: lszrh/whatsapp-transcriptions:latest
     container_name: 'speech_to_text_node'
     volumes:
        - './node/data:/app/data:rw'
