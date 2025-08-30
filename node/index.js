@@ -14,7 +14,7 @@ const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
 const { state } = require('./state');
 
-const puppeteerOptions = {
+let puppeteerOptions = {
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
 };
