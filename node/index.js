@@ -16,7 +16,15 @@ const { state } = require('./state');
 
 let puppeteerOptions = {
         headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
+            '--disable-accelerated-2d-canvas',
+            '--no-first-run',
+            '--no-zygote',
+            '--disable-gpu'
+        ]
 };
 
 const webVersionCacheOptions = {
@@ -50,6 +58,7 @@ async function init() {
 
     // Generates a QR code in the console for authentication.
     client.on('qr', qr => {
+        console.log('Generate QR code for authentication.');
         qrcode.generate(qr, {small: true});
     });
 
