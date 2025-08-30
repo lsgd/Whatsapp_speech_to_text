@@ -44,7 +44,7 @@ Check the detailed documentation of the different Speech-to-text implementations
 
 - [Google Speech-to-text API](./speech_google.md)
 - [Local OpenWhisper](./speech_open-whisper.md)
-- [Local FasterWhisper](./speech_google.md)
+- [Local FasterWhisper](./speech_faster-whisper.md)
 - [OpenAI Online API](./speech_openai-online-api.md)
 
 ### TODOs
