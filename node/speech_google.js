@@ -5,16 +5,18 @@ const {Storage} = require('@google-cloud/storage');
 
 const env = require('./environment');
 
-const storage = new Storage({
-    projectId: env.googleCloudProjectID,
-    keyFilename: env.googleCloudServiceAccountCredentialsFile,
-});
+if (env.speechRecognitionSystem === 'google') {
+    const storage = new Storage({
+        projectId: env.googleCloudProjectID,
+        keyFilename: env.googleCloudServiceAccountCredentialsFile,
+    });
 
-// Creates a client
-const client = new speech.SpeechClient({
-    projectId: env.googleCloudProjectID,
-    keyFilename: env.googleCloudServiceAccountCredentialsFile,
-});
+    // Creates a client
+    const client = new speech.SpeechClient({
+        projectId: env.googleCloudProjectID,
+        keyFilename: env.googleCloudServiceAccountCredentialsFile,
+    });
+}
 
 async function transcribeSpeechToText(gcsURI) {
     // The audio file's encoding, sample rate in hertz, and BCP-47 language code
