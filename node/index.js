@@ -5,7 +5,7 @@ const qrcode = require('qrcode-terminal');
 const {Client, LocalAuth} = require('whatsapp-web.js');
 
 // see versions here: https://github.com/wppconnect-team/wa-version/tree/main/html
-const whatsappWebVersion = '2.3000.1017845299-alpha';
+const whatsappWebVersion = '2.3000.1024319249-alpha';
 
 const env = require('./environment');
 const languages = require('./languages');
