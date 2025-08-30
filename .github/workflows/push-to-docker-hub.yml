@@ -17,7 +17,6 @@ on:
 
 jobs:
   push_to_registry:
-    if: github.ref == 'refs/heads/main'
     name: Push Docker image "node" to Docker Hub
     runs-on: ubuntu-latest
     permissions:
