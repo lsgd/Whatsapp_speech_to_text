@@ -39,6 +39,11 @@ jobs:
         uses: docker/metadata-action@v5.8.0
         with:
           images: lszrh/whatsapp-transcriptions
+          # set latest tag for main branch
+          # set branch name as tag (refs/heads/main --> main)
+          tags: |
+            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
+            type=ref,event=branch
 
       - name: Build and push Docker image
         id: push
@@ -47,11 +52,7 @@ jobs:
           context: ./node
           file: ./node/Dockerfile
           push: true
-          # set latest tag for master branch
-          # branch event (refs/heads/main --> main)
-          tags: |
-            type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
-            type=ref,event=branch
+          tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Generate artifact attestation
