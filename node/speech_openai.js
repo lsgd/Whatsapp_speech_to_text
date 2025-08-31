@@ -3,9 +3,10 @@ const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs');
 const env = require("./environment");
 
+let openai = undefined;
 if (env.speechRecognitionSystem === 'openai') {
     // Gets API key from environment variable process.env.OPENAI_API_KEY
-    const openai = new OpenAI();
+    openai = new OpenAI();
 }
 
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;

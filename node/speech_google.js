@@ -5,14 +5,16 @@ const {Storage} = require('@google-cloud/storage');
 
 const env = require('./environment');
 
+let storage = undefined;
+let client = undefined;
 if (env.speechRecognitionSystem === 'google') {
-    const storage = new Storage({
+    storage = new Storage({
         projectId: env.googleCloudProjectID,
         keyFilename: env.googleCloudServiceAccountCredentialsFile,
     });
 
     // Creates a client
-    const client = new speech.SpeechClient({
+    client = new speech.SpeechClient({
         projectId: env.googleCloudProjectID,
         keyFilename: env.googleCloudServiceAccountCredentialsFile,
     });
