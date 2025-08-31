@@ -43,7 +43,7 @@ if (env.userAgent) {
 
 // Setup options for the client and data path for the google chrome session
 const client = new Client({
-    authStrategy: new LocalAuth({dataPath: env.chromeDataPath}),
+    authStrategy: new LocalAuth({dataPath: env.chromeDataPath.replace(/\/*$/, '') + '/.wwebjs_auth'}),
     puppeteer: puppeteerOptions,
     webVersionCache: webVersionCacheOptions,
 });
