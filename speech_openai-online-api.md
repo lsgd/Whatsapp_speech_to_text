@@ -3,7 +3,12 @@
 OpenAI offers a [Transcription API](https://platform.openai.com/docs/api-reference/audio/createTranscription) that can
 be used to transcribe audio files to text.
 
+It either uses OpenAI Whisper or GPT 4o-transcribe. Depending on the value of the environment variable
+`SPEECH_RECOGNITION_SYSTEM`.
+
 ## 1. Workflow
+
+What does it do?
 
 1. Download the voice audio from WhatsApp
 2. Upload the voice audio to the OpenAI Whisper Transcription API
@@ -54,7 +59,8 @@ API key.
 You need to pass the following additional environment variables in order to run our node service with the OpenAI online
 Whisper API.
 
-1. `SPEECH_RECOGNITION_SYSTEM = 'openai'` to tell the node service to use the OpenAI online API as backend.
+1. `SPEECH_RECOGNITION_SYSTEM = 'openai'` to tell the node service to use the OpenAI online API as backend. Use
+   `openai4o` alternatively to use model GTP 4o-transcribe instead of GPT whisper.
 2. `OPENAI_API_KEY: 'my-private-key'` has the OpenAI Whisper API key.
     - You can generate an API key on https://platform.openai.com/api-keys
 3. `OPENAI_TRANSLATE_TO_ENGLISH: true` whether voice messages shall be translated to English as well.

@@ -9,6 +9,7 @@ const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
+const speechOpenAI4oTranscribe = require('./speech_openai_4o_transcribe');
 const { state } = require('./state');
 
 let puppeteerOptions = {
@@ -309,6 +310,8 @@ async function ProcessVoiceMessage(message) {
     if (env.speechRecognitionSystem === 'google') {
         callback = speechGoogle.transcribe;
     } else if (env.speechRecognitionSystem === 'openai') {
+        callback = speechOpenAI.transcribe;
+    }  else if (env.speechRecognitionSystem === 'openai4o') {
         callback = speechOpenAI.transcribe;
     } else {
         callback = speechWhisper.transcribe;

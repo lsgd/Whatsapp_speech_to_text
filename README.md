@@ -8,6 +8,7 @@ recognition systems:
     - OpenWhisper (locally)
     - FasterWhisper (locally)
     - OpenAI Whisper (online API)
+- OpenAI GPT 4o-transcribe (online API)
 - [Google Speech-to-Text](https://cloud.google.com/speech-to-text)
 
 <p>

@@ -12,6 +12,7 @@ services:
       # Transcribe incoming voice messages automatically.
       AUTOMATIC_TRANSCRIPTION: true
       # Use the OpenAI Whisper API as the speech recognition system.
+      # Use "openai" for OpenAI Whisper and "openai4o" for the Open AI 4o-transcribe model.
       SPEECH_RECOGNITION_SYSTEM: 'openai'
       # OpenAI Whisper API Key. You get one on https://platform.openai.com/api-keys
       OPENAI_API_KEY: 'my-private-key'
