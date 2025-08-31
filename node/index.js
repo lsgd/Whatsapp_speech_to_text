@@ -312,7 +312,7 @@ async function ProcessVoiceMessage(message) {
     } else if (env.speechRecognitionSystem === 'openai') {
         callback = speechOpenAI.transcribe;
     }  else if (env.speechRecognitionSystem === 'openai4o') {
-        callback = speechOpenAI.transcribe;
+        callback = speechOpenAI4oTranscribe.transcribe;
     } else {
         callback = speechWhisper.transcribe;
     }
