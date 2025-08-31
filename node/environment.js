@@ -34,6 +34,11 @@ console.log(`Use one of the following commands to manually transcribe voice mess
 const systemLanguage = getStringEnvVariable(process.env.SYSTEM_LANGUAGE, 'en');
 exports.systemLanguage = systemLanguage;
 
+// Set a specific WhatsApp version to use. If not set, will use latest.
+// Check this link for available versions: https://github.com/wppconnect-team/wa-version/tree/main/html
+const whatsappVersion = getStringEnvVariable(process.env.WHATSAPP_VERSION, null);
+exports.whatsappVersion = whatsappVersion;
+
 // chromeDataPath is the path where the Google Chrome session will be stored.
 const chromeDataPath = getStringEnvVariable(process.env.CHROME_DATA_PATH, './');
 exports.chromeDataPath = chromeDataPath;
