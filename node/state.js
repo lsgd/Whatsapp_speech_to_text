@@ -42,7 +42,7 @@ class State {
 
   async load() {
     console.log('Load state: Started');
-    this.#transcribedMessages = await storage.getItem('transcribedMessages');
+    this.#transcribedMessages = await storage.getItem('transcribedMessages') || this.#transcribedMessages;
     this.#transcribedMessagesIds = await storage.getItem('transcribedMessagesIds') || this.#transcribedMessagesIds;
     this.#chatTranscriptionsDisabled = await storage.getItem('chatTranscriptionsDisabled') || this.#chatTranscriptionsDisabled;
     this.#globalTranscriptionDisabled = await storage.getItem('globalTranscriptionDisabled') || this.#globalTranscriptionDisabled;
