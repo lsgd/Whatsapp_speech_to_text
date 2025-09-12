@@ -233,5 +233,5 @@ const _slowMovieFrames = getStringEnvVariable(
 );
 exports.slowMovieFrames = _slowMovieFrames;
 
-const _debug_wa_web = getBooleanEnvVariable(process.env.DEBU_WA_WEB, false);
+const _debug_wa_web = getBooleanEnvVariable(process.env.DEBUG_WA_WEB, false);
 exports.debug_wa_web = _debug_wa_web;
