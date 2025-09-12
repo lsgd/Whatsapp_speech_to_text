@@ -50,7 +50,8 @@ jobs:
         uses: docker/build-push-action@v6.18.0
         with:
           context: ./node
-          file: ./node/Dockerfile
+          # default to the node build
+          file: ./node/Dockerfile.node
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
