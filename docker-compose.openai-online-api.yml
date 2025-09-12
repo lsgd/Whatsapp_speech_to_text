@@ -1,27 +1,27 @@
-version: '3.5'
+version: "3.5"
 
 services:
   speech_to_text_node:
     image: lszrh/whatsapp-transcriptions:latest
-    container_name: 'speech_to_text_node'
+    container_name: "speech_to_text_node"
     volumes:
-      - './node/data:/app/data:rw'
+      - "./node/data:/app/data:rw"
     environment:
       # Location of the WhatsApp-web chrome session. Matches the volume path from above.
-      CHROME_DATA_PATH: '/app/data/'
+      CHROME_DATA_PATH: "/app/data/"
       # Transcribe incoming voice messages automatically.
-      AUTOMATIC_TRANSCRIPTION: true
+      AUTOMATIC_TRANSCRIPTION: "true"
       # Use the OpenAI Whisper API as the speech recognition system.
       # Use "openai" for OpenAI Whisper and "openai4o" for the Open AI 4o-transcribe model.
-      SPEECH_RECOGNITION_SYSTEM: 'openai'
+      SPEECH_RECOGNITION_SYSTEM: "openai"
       # OpenAI Whisper API Key. You get one on https://platform.openai.com/api-keys
-      OPENAI_API_KEY: 'my-private-key'
+      OPENAI_API_KEY: "my-private-key"
       # OpenAI supports translating certain languages to English (and only English)
-      OPENAI_TRANSLATE_TO_ENGLISH: true
+      OPENAI_TRANSLATE_TO_ENGLISH: "true"
       # If translation to English is enabled, OpenAI will not translate voice messages of the following comma-separated languages.
       # It's unclear which naming scheme is used for the languages!
       # Details on https://platform.openai.com/docs/guides/speech-to-text/supported-languages
-      OPENAI_EXCLUDED_TRANSLATION_LANGUAGES: 'english,german'
+      OPENAI_EXCLUDED_TRANSLATION_LANGUAGES: "english,german"
     restart: unless-stopped
     networks:
       whatsapp_network:
