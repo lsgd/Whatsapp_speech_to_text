@@ -174,6 +174,7 @@ async function init() {
 
     if (env.debug_wa_web) {
         // set up loggers for all the events
+        console.log("Installing loggers for all client events.");
         log_all_events(node);
     }
 
