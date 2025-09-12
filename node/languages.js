@@ -2,6 +2,19 @@
 
 const env = require('./environment');
 
+function template(strings, ...keys) {
+	  return (...values) => {
+		      const dict = values[values.length - 1] || {};
+		      const result = [strings[0]];
+		      keys.forEach((key, i) => {
+			            const value = Number.isInteger(key) ? values[key] : dict[key];
+			            result.push(value, strings[i + 1]);
+			          });
+		      const withSpace = result.join("");
+		      return withSpace.replace(/^\s*/gm, '');
+		    };
+}
+
 const languages = {
     de: {
         successHeader: '*Transkript:*\n',
@@ -19,12 +32,15 @@ const languages = {
             helpUnauthorized: '*Transkription-Bot:*\n' +
                 'Alles in Ordnung?\nNur ein Witz..., aber du bist nicht authorisiert um weitreichende Änderungen vorzunehmen.\n' +
                 `Antworte auf eine Sprachnachricht mit "${env.transcriptionCommands.join('" oder "')}" um diese zu transkribieren.` +
-                `Gib "!help" ein, um diesen Hilfetext anzeigen.`,
-            status: '*Transkription-Bot:*\n' +
-                '- Globale Transkription ist {globalStatus}.\n' +
-                '- Transkription für diesen Chat ist {chatStatus}.',
-            globalTranscription: '*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt {status}.',
-            chatTranscription: '*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt {status}.',
+                `Gib "!help" ein, um diesen Hilfetext anzeigen.`
+	},
+	templates: {
+            status: template`*Transkription-Bot:*\n\
+                - Globale Transkription ist ${"globalStatus"}.\n\
+                - Transkription für diesen Chat ist ${"chatStatus"}\n\
+		- Current image: ${"currentFrame"}.`,
+            globalTranscription: template`*Transkription-Bot:*\nAutomatische globale Transkription ist ab jetzt ${"status"}.`,
+            chatTranscription: template`*Transkription-Bot:*\nAutomatische Transkription in diesem Chat ist ab jetzt ${"status"}.`,
         },
     },
     en: {
@@ -43,12 +59,15 @@ const languages = {
             helpUnauthorized: '*Transcription-Bot:*\n' +
                 'Are you okay?\nJust joking..., but you are not authorized to run any commands of this bot.\n' +
                 `However, you can respond to a voice message with "${env.transcriptionCommands.join('" or "')}" to trigger transcription.` +
-                `Send "!help" to see this text again.`,
-            status: '*Transcription-Bot:*\n' +
-                '- Global transcription is {globalStatus}.\n' +
-                '- Transcription within this chat is {chatStatus}.',
-            globalTranscription: '*Transcription-Bot:*\nAutomatic global transcription is now {status}.',
-            chatTranscription: '*Transcription-Bot:*\nAutomatic transcription within this chat is now {status}.',
+                `Send "!help" to see this text again.`
+	},
+	templates: {
+            status: template`*Transcription-Bot:*\n\
+                - Global transcription is ${"globalStatus"}.\n\
+                - Transcription within this chat is ${"chatStatus"}.\n\
+		- Current image: ${"currentFrame"}.`,
+            globalTranscription: template`*Transcription-Bot:*\nAutomatic global transcription is now ${"status"}.`,
+            chatTranscription: template`*Transcription-Bot:*\nAutomatic transcription within this chat is now ${"status"}.`,
         },
     }
 };

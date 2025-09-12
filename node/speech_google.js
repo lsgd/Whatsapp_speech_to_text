@@ -20,21 +20,22 @@ if (env.speechRecognitionSystem === 'google') {
     });
 }
 
-async function transcribeSpeechToText(gcsURI) {
+const config = {
+    encoding: 'OGG_OPUS',
+    sampleRateHertz: 16000,
+    languageCode: env.googleCloudSpeechLanguage,
+    alternativeLanguageCodes: env.googleCloudSpeechAlternativeLanguages,
+    profanityFilter: false,
+    enableWordTimeOffsets: false,
+    enableAutomaticPunctuation: true,
+    model: 'latest_long',
+    useEnhanced: true,
+};
+
+async function transcribeSpeechToText(decodedVoiceBinaryData) {
     // The audio file's encoding, sample rate in hertz, and BCP-47 language code
     const audio = {
-        uri: gcsURI,
-    };
-    const config = {
-        encoding: 'OGG_OPUS',
-        sampleRateHertz: 16000,
-        languageCode: env.googleCloudSpeechLanguage,
-        alternativeLanguageCodes: env.googleCloudSpeechAlternativeLanguages,
-        profanityFilter: false,
-        enableWordTimeOffsets: false,
-        enableAutomaticPunctuation: true,
-        model: 'latest_long',
-        useEnhanced: true,
+        content: decodedVoiceBinaryData.toString('base64')
     };
     const request = {
         audio: audio,
@@ -61,9 +62,10 @@ async function transcribe(decodedVoiceBinaryData, voiceMessageId, message) {
     // Send the decoded binary buffer to the Flask API
     return new Promise(async (resolve, reject) => {
         const destFile = message.from + message.timestamp + voiceMessageId;
-        await uploadToCloudStorageFromMemory(destFile, decodedVoiceBinaryData);
-        console.log(`Upload successful! Voice message #${voiceMessageId} stored on Google CloudStorage.`)
-        const transcript = await transcribeSpeechToText(generateGcsURI(destFile));
+        //await uploadToCloudStorageFromMemory(destFile, decodedVoiceBinaryData);
+        //console.log(`Upload successful! Voice message #${voiceMessageId} stored on Google CloudStorage.`)
+        //const transcript = await transcribeSpeechToText(generateGcsURI(destFile));
+        const transcript = await transcribeSpeechToText(decodedVoiceBinaryData);
         console.log(`Transcription successful! Google Speech-to-Text responded with: ${transcript}`)
         resolve(JSON.stringify({'results': [{'filename': destFile, 'transcript': transcript}]}));
     });

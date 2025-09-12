@@ -4,13 +4,18 @@ const qrcode = require('qrcode-terminal');
 // Required for Whatsapp Web connection.
 const {Client, LocalAuth} = require('whatsapp-web.js');
 
+// see versions here: https://github.com/wppconnect-team/wa-version/tree/main/html
+const whatsappWebVersion = '2.3000.1017845299-alpha';
+
 const env = require('./environment');
 const languages = require('./languages');
 const speechWhisper = require('./speech_whisper');
 const speechGoogle = require('./speech_google');
 const speechOpenAI = require('./speech_openai');
+const speechOpenAIWhisper = require('./speech_openai_whisper');
 const speechOpenAI4oTranscribe = require('./speech_openai_4o_transcribe');
 const { state } = require('./state');
+const { next_frame } = require('./slow_movie');
 
 let puppeteerOptions = {
         headless: true,
@@ -38,6 +43,7 @@ if (env.chromiumPath) {
 }
 
 if (env.userAgent) {
+    console.log(`Setting user agent to ${env.userAgent}`);
     puppeteerOptions.args.push(`--user-agent="${env.userAgent}"`);
 }
 
@@ -70,6 +76,9 @@ async function init() {
 
     // Reply to me and contacts
     client.on('message_create', async message => {
+	if (env.playSlowMovie){
+	    next_frame(state, client);
+	}
         let [contactName, trustedContact] = await getContactInfo(message);
         if (message.fromMe) {
             // Always trust messages sent by me. I am quite trustworthy :-D
@@ -253,13 +262,14 @@ async function ProcessCommandMessage(message) {
     if (command === '!status') {
         const globalStatus = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
         const chatStatus = state.isChatTranscriptionDisabled(chat.id._serialized) ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.status.replace('{globalStatus}', globalStatus).replace('{chatStatus}', chatStatus));
+	const currentFrame = state.pictureId;
+        await message.reply(languages.text.templates.status({globalStatus: globalStatus, chatStatus: chatStatus, currentFrame: currentFrame}));
         return true;
     }
     if (command === '!transcription-global=on' || command === '!transcription-global=off') {
         state.globalTranscriptionDisabled = command.endsWith('off');
         const status = state.globalTranscriptionDisabled ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.globalTranscription.replace('{status}', status));
+        await message.reply(languages.text.templates.globalTranscription({status: status}));
         return true;
     }
     if (command === '!transcription=on' || command === '!transcription=off') {
@@ -270,8 +280,22 @@ async function ProcessCommandMessage(message) {
           await state.enableChatTranscription(id);
         };
         const status = command.endsWith('off') ? languages.text.commands.disabled : languages.text.commands.enabled;
-        await message.reply(languages.text.commands.chatTranscription.replace('{status}', status));
+        await message.reply(languages.text.templates.chatTranscription({status: status}));
         return true;
+    }
+    if (command.startsWith('!image=')){
+	console.log(`Received command ${command}`);
+        var elements = command.split("=");
+	if (elements.length < 2){ return true; }
+        var maybe_id = parseInt(elements[1], 10);
+	console.log(`Elements: ${elements[0]},${elements[1]}`);
+        if (isNaN(maybe_id)){
+            await message.reply(`Invalid id ${maybe_id}`);
+            return true;
+	}
+	console.log(`Saving picture id ${maybe_id}`);
+	state.pictureId = maybe_id;
+	state.save();
     }
 
     if (!env.transcriptionCommands.includes(command)) {
@@ -282,64 +306,69 @@ async function ProcessCommandMessage(message) {
 }
 
 async function ProcessVoiceMessage(message) {
-    const voiceMessage = await getMessageToTranscribe(message);
+    try{
+        const voiceMessage = await getMessageToTranscribe(message);
 
-    // The provided message and a possible quoted message weren't of type voice message.
-    if (!voiceMessage) {
-        return;
-    }
+        // The provided message and a possible quoted message weren't of type voice message.
+        if (!voiceMessage) {
+            return;
+        }
 
-    // Bail out early if the message does not contain audio.
-    if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
-        return;
-    }
+        // Bail out early if the message does not contain audio.
+        if (!voiceMessage.type.includes("ptt") && !voiceMessage.type.includes("audio")) {
+            return;
+        }
 
-    const chat = await message.getChat();
-    const messageId = voiceMessage.id._serialized;
+        const chat = await message.getChat();
+        const messageId = voiceMessage.id._serialized;
 
-    // If it is a voice message, we download it and send it to the api
-    const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
-    if (!attachmentData) {
-        message.reply(languages.text.couldNotDownloadAudio);
-        return;
-    }
+        // If it is a voice message, we download it and send it to the api
+        const attachmentData = await downloadQuotedMedia(voiceMessage, messageId, chat, maxRetries = 1000);
+        if (!attachmentData) {
+            message.reply(languages.text.couldNotDownloadAudio);
+            return;
+        }
 
-    // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
-    const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
-    let callback = null;
-    if (env.speechRecognitionSystem === 'google') {
-        callback = speechGoogle.transcribe;
-    } else if (env.speechRecognitionSystem === 'openai') {
-        callback = speechOpenAI.transcribe;
-    }  else if (env.speechRecognitionSystem === 'openai4o') {
-        callback = speechOpenAI4oTranscribe.transcribe;
-    } else {
-        callback = speechWhisper.transcribe;
-    }
-    callback(binaryVoiceBuffer, messageId, message)
-        .then(async (body) => {
-            const data = JSON.parse(body);
-            for (const result of data.results) {
-                const transcript = result.transcript;
-                let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
-                // Mark chat as unread to not send miss voice messages
-                await chat.markUnread();
-                try{
-                  let id = getTimestampId(voiceMessage);
-                  await state.trackMessage(id, {
-                      messageId: responseMessage.id._serialized,
-                      chatId: chat.id._serialized,
-                  });
-                } catch (err) {
-                  console.log(`Error while caching message id: ${err}`);
-                  console.log(err.stack);
+        // Decode the base64 data (The data is a base64 string because thats the way WhatsApp.js handles media)
+        const binaryVoiceBuffer = Buffer.from(attachmentData.data, 'base64');
+        let callback = null;
+	      console.log(`Speech recognition system: ${env.speechRecognitionSystem}`);
+        if (env.speechRecognitionSystem === 'google') {
+            callback = speechGoogle.transcribe;
+        } else if (env.speechRecognitionSystem === 'openai') {
+            callback = speechOpenAIWhisper.transcribe;
+        } else if (env.speechRecognitionSystem === 'openai4o') {
+            callback = speechOpenAI4oTranscribe.transcribe;
+        } else {
+            callback = speechWhisper.transcribe;
+        }
+        callback(binaryVoiceBuffer, messageId, message)
+            .then(async (body) => {
+                const data = JSON.parse(body);
+                for (const result of data.results) {
+                    const transcript = result.transcript;
+                    let responseMessage = await voiceMessage.reply(languages.text.successHeader + transcript);
+                    // Mark chat as unread to not send miss voice messages
+                    await chat.markUnread();
+                    try{
+                      let id = getTimestampId(voiceMessage);
+                      state.trackMessage(id, {
+                          messageId: responseMessage.id._serialized,
+                          chatId: chat.id._serialized,
+                      });
+                    } catch (err) {
+                      console.log(`Error while caching message id: ${err}`);
+                      console.log(err.stack);
+                    }
                 }
-            }
-        })
-        .catch((err) => {
-            console.error(err);
-            voiceMessage.reply(languages.text.errorHeader);
-        });
+            })
+            .catch((err) => {
+                console.error(err);
+                voiceMessage.reply(languages.text.errorHeader);
+            });
+    }catch(err){
+	console.error(err);
+    }
 }
 
 // Start the script.
