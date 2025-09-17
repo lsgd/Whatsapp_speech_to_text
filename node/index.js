@@ -515,11 +515,20 @@ async function ProcessVoiceMessage(message) {
                 const data = JSON.parse(body);
                 for (const result of data.results) {
                     const transcript = result.transcript;
-                    let responseMessage = await voiceMessage.reply(
-                        languages.text.successHeader + transcript,
-                    );
+		    // use client.sendMessage for replying so that we can set 
+		    // sendSeen to false. Theoretically one can also pass it
+		    // message.reply but it will crash.
+		    // sendSeen defaults to true which causes the quotedMessage
+		    // to be marked as seen.
+		    let responseMessage = await client.sendMessage(
+			    chat.id._serialized, 
+			    languages.text.successHeader + transcript, 
+			    { sendSeen: false, quotedMessageId: messageId }
+		    );
                     // Mark chat as unread to not send miss voice messages
+		    // one or the other may be superfluous.
                     await chat.markUnread();
+                    await client.markChatUnread(chat.id._serialized);
                     try {
                         let id = getTimestampId(voiceMessage);
                         state.trackMessage(id, {
